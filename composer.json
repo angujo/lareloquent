@@ -1,0 +1,19 @@
+{
+    "name": "angujo/lareloquent",
+    "description": "Another Simple attempt to Eloquent",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Angujo\\Lareloquent\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "angujo",
+            "email": "angujomondi@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
