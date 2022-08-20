@@ -72,7 +72,7 @@ class DBConnection
 
     public function countTables()
     {
-        return (int)$this->getDb()->single('SELECT count(1) FROM ('.$this->replacedSql(__FUNCTION__, tbl_alias: 't').') AS t');
+        return (int)$this->getDb()->single('SELECT count(1) FROM ('.$this->replacedSql('tables', tbl_alias: 't').') AS t');
     }
 
     public function Tables()
