@@ -18,4 +18,5 @@ where not exists
        and kcu.TABLE_SCHEMA = cu.CONSTRAINT_SCHEMA
      group by ku.CONSTRAINT_NAME, ku.TABLE_NAME, ku.TABLE_SCHEMA
      having count(1) < 2)
+  and rc.REFERENCED_TABLE_NAME = '{tbl}'
   and kcu.TABLE_SCHEMA = '{db}';

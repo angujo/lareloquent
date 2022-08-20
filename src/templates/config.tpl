@@ -141,6 +141,19 @@ return
          */
         'only_tables'             => [],
         /*
+        * Pivot tables for a many-to-many relationship
+        * E.g. at https://laravel.com/docs/8.x/eloquent-relationships#many-to-many
+        * role_user is a pivot table
+        * Only set table names
+        */
+        'pivot_tables'            => [],
+        /*
+        * Process pivot tables to be part of the model classes.
+        * If processed pivot columns accessible through [pivot] as the attribute name,
+        * otherwise the pivot class name is used.
+        */
+        'process_pivot_tables'    => true,
+        /*
          * In Laravel 7+ a User table comes with setup and extends Authenticatable
          * This voids IDE intellisense on properties and relations
          * Setting User as Trait is way of trying to circumvent this.

@@ -1,1 +1,1 @@
-select TABLE_NAME name,TABLE_TYPE `type`, TABLE_COMMENT `comment` from information_schema.TABLES t where TABLE_SCHEMA ='{db}';
+select TABLE_NAME name,TABLE_TYPE `type`, TABLE_COMMENT `comment` from information_schema.TABLES t where TABLE_SCHEMA ='{db}' {andwhere};

@@ -9,6 +9,12 @@ class Path
 
     public static function Combine(...$paths)
     {
-        return implode(DIRECTORY_SEPARATOR, $paths);
+        return implode(DIRECTORY_SEPARATOR, array_filter($paths));
+    }
+
+    public static function Template(string $file_name)
+    : string
+    {
+        return self::Combine(Path::$BASE, 'templates', $file_name);
     }
 }

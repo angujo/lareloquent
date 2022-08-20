@@ -8,7 +8,8 @@
       "src/helper.php"
     ],
     "psr-4": {
-      "Angujo\\Lareloquent\\": "src/"
+      "Angujo\\Lareloquent\\": "src/",
+      "App\\Models\\": "output/"
     }
   },
   "authors": [
@@ -20,6 +21,7 @@
   "minimum-stability": "dev",
   "require": {
     "paragonie/easydb": "3",
-    "nesbot/carbon": "3.x-dev"
+    "nesbot/carbon": "3.x-dev",
+    "plejus/pluralize": "dev-master"
   }
 }

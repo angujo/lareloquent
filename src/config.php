@@ -10,7 +10,7 @@ return
          * Class to be used for each and every generated model
          * Ensure it is or extends \Illuminate\Database\Eloquent\Model::class
          */
-        'model_class'             => null,
+        'model_class'             => \Eloquent::class,
         /*
          * Directory path to put the models
          */
@@ -42,7 +42,7 @@ return
          * Prefix for the abstract classes
          * Default: Base
          */
-        'base_abstract_prefix'    => 'Base',
+        'base_abstract_prefix'    => '',
         /*
          * Set the model connection defined
          */
@@ -56,7 +56,7 @@ return
         /*
          * Set the date format for DB, serialization in array or json
          */
-        'date_format'             => 'YYYY-mm-dd',
+        'date_format'             => null,
         /*
          * Add a validation rule to every column and avail as $rules for each model
          */
@@ -108,7 +108,7 @@ return
          */
         'constant_column_names'   => true,
         /*
-         * When [constant_column_names] is enable,
+         * When [constant_column_names] is enabled,
          * set the prefix to use.
          * e.g. prefix = 'COL_' then column email becomes User::COL_EMAIL
          */
@@ -141,6 +141,19 @@ return
          * The reset will be excluded
          */
         'only_tables'             => [],
+        /*
+         * Pivot tables for a many-to-many relationship
+         * E.g. at https://laravel.com/docs/8.x/eloquent-relationships#many-to-many
+         * role_user is a pivot table
+         * Only set table names
+         */
+        'pivot_tables'            => ['film_category', 'film_actor'],
+        /*
+         * Process pivot tables to be part of the model classes.
+         * If processed pivot columns accessible through [pivot] as the attribute name,
+         * otherwise the pivot class name is used.
+         */
+        'process_pivot_tables'    => false,
         /*
          * In Laravel 7+ a User table comes with setup and extends Authenticatable
          * This voids IDE intellisense on properties and relations

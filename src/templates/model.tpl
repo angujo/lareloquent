@@ -5,10 +5,12 @@ namespace {namespace};
 {uses}
 
 /**
+{classcomment}
 {columns}
 */
 class {name} extends {parent}
 {
+{todo}
 {traits}
 {constants}
 {connection}
@@ -19,4 +21,12 @@ class {name} extends {parent}
 {date_format}
 {timestamps}
 {attributes}
+{one2one}
+{belongsto}
+{hasmany}
+{onethrough}
+{manythrough}
+{belongstomany}
+{morphto}
+{morphmany}
 }

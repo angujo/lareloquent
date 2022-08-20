@@ -4,6 +4,8 @@ namespace Angujo\Lareloquent\Factory;
 
 use Angujo\Lareloquent\Framework;
 use Angujo\Lareloquent\Path;
+use function Angujo\Lareloquent\str_equal;
+use function Angujo\Lareloquent\str_rand;
 
 /**
  * @property Framework   $framework
@@ -33,7 +35,9 @@ use Angujo\Lareloquent\Path;
  * @property string[]    $update_columns
  * @property string[]    $excluded_tables
  * @property string[]    $only_tables
+ * @property string[]    $pivot_tables
  * @property bool        $model_trait
+ * @property bool        $process_pivot_tables
  * @property string[]    $trait_model_tables
  * @property string[]    $custom_extends
  * @property string[]    $relation_naming
@@ -50,6 +54,18 @@ class Config
     /** @var array */
     private array $configs = [];
 
+    /** @var array */
+    public array $command = [
+        'name'     => null,
+        'dbms'     => null,
+        'host'     => null,
+        'dbname'   => null,
+        'username' => null,
+        'password' => null,
+    ];
+
+    public bool $overwrite = false;
+
     public function __construct()
     {
         $this->configs = array_merge(include(Path::Combine(BASE_DIR, "config.php")));
@@ -64,6 +80,14 @@ class Config
     public function __get(string $name)
     {
         $key = strtolower($name);
+        if (str_equal($key, 'base_abstract_prefix') && (!isset($this->configs[$key]) || empty($this->configs[$key]))) {
+            $this->configs[$key] = 'Base';// str_rand(10, numbers: false, special_xters: false);
+        }
         return $this->configs[$key] ?? null;
+    }
+
+    public function __isset($name)
+    {
+        return isset($this->configs[$name]) && !empty($this->configs[$name]);
     }
 }

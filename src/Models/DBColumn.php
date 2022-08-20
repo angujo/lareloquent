@@ -2,9 +2,11 @@
 
 namespace Angujo\Lareloquent\Models;
 
+use Angujo\Lareloquent\DataType;
 use Angujo\Lareloquent\LarEloquent;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use function Angujo\Lareloquent\str_equal;
 
 class DBColumn
 {
@@ -12,6 +14,7 @@ class DBColumn
 
     public string      $table_name;
     public string      $column_name;
+    public string      $column_comment;
     public int|null    $ordinal_position;
     public string|null $column_default;
     public string      $data_type;
@@ -41,28 +44,45 @@ class DBColumn
         return in_array($this->data_type, ['date_time', 'timestamp', 'datetime']);
     }
 
+    public function docType()
+    {
+        return $this->dataType().($this->is_nullable ? '|null' : '');
+    }
+
+    public function defaultValue()
+    {
+        return match ($this->PhpDataType()) {
+            DataType::DATETIME => str_contains(strtoupper($this->column_default), 'CURRENT_TIMESTAMP') ? null : var_export($this->column_default, true),
+            DataType::BOOL => var_export((bool)$this->column_default, true),
+            DataType::INT, DataType::FLOAT => $this->column_default,
+            default => var_export($this->column_default, true),
+        };
+    }
+
     public function dataType()
     {
-        return $this->PhpDataType().($this->is_nullable ? '|null' : '');
+        return (str_equal(DataType::DATETIME->value, $this->PhpDataType()->value) ? basename(Carbon::class) : $this->PhpDataType()->value);
     }
 
     public function PhpDataType()
+    : DataType
     {
         switch ($this->data_type) {
+            case 'tinyint':
+                return DataType::BOOL;
             case 'int':
             case 'mediumint':
-            case 'tinyint':
             case 'bigint':
             case 'smallint':
             case 'year':
-                return 'int';
+                return DataType::INT;
             case 'float':
             case 'double':
             case 'decimal':
-                return 'float';
+                return DataType::FLOAT;
             case 'datetime':
             case 'timestamp':
-                return basename(Carbon::class);
+                return DataType::DATETIME;
             case 'enum':
             case 'json':
             case 'text':
@@ -80,7 +100,7 @@ class DBColumn
             case 'varchar':
             case 'longtext':
             default:
-                return 'string';
+                return DataType::STRING;
         }
     }
 
