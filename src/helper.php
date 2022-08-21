@@ -2,6 +2,8 @@
 
 namespace Angujo\Lareloquent {
 
+    use Angujo\Lareloquent\Models\GeneralTag;
+    use Laminas\Code\Reflection\DocBlock\Tag\LicenseTag;
     use plejus\PhpPluralize\Inflector;
 
     define('BASE_DIR', dirname(__FILE__));
@@ -104,6 +106,14 @@ namespace Angujo\Lareloquent {
         : string
         {
             return model_name(($base ? LarEloquent::config()->base_abstract_prefix.'_' : '').$txt).'.php';
+        }
+    }
+
+    if (!function_exists('tag')) {
+        function tag(string $name, string $description)
+        : GeneralTag
+        {
+            return (new GeneralTag(name: $name, description: $description));
         }
     }
 

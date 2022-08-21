@@ -6,6 +6,8 @@ use Angujo\Lareloquent\Factory\Config;
 use Angujo\Lareloquent\Factory\DBConnection;
 use Angujo\Lareloquent\Factory\Model;
 use Angujo\Lareloquent\Factory\Observer;
+use Angujo\Lareloquent\Factory\ProviderBoot;
+use Angujo\Lareloquent\Factory\Request;
 use Angujo\Lareloquent\Factory\WorkModel;
 
 class LarEloquent
@@ -26,13 +28,19 @@ class LarEloquent
         $this->connection = $connection;
     }
 
-    public function SetModels(\Closure $pre = null, \Closure $post = null)
+    public function setExtensions()
+    {
+        ProviderBoot::Write();
+    }
+
+    public function setModels(\Closure $pre = null, \Closure $post = null)
     {
         foreach ($this->connection->Tables() as $table) {
             if ($pre && is_callable($pre)) $pre($table);
-            Model::Write($this->connection, $table);
+            $model = Model::Write($this->connection, $table);
             WorkModel::Write($table);
             if (LarEloquent::config()->observers) Observer::Write($table);
+            if (LarEloquent::config()->requests) Request::Write($table, $model->columns);
             if ($post && is_callable($pre)) $post($table);
         }
     }

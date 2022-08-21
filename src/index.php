@@ -9,6 +9,7 @@ use Angujo\Lareloquent\Models\DBTable;
 echo "Starting off...\n";
 
 $lare = new LarEloquent(DBConnection::fromDefault());
-$lare->SetModels(function(DBTable $table){ echo "$table->name\n"; });
+$lare->setModels(function(DBTable $table){ echo "$table->name\n"; });
+$lare->setExtensions();
 
 //var_dump(\Angujo\Lareloquent\str_rand(10));

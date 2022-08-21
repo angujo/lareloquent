@@ -35,7 +35,7 @@ class Model
     private DBColumn     $deletedCol;
 
     /** @var array|DBColumn[] */
-    private $columns = [];
+    public $columns = [];
     /** @var DocProperty[] */
     private array $doc_properties = [];
     private array $col_constants  = [];
@@ -178,6 +178,7 @@ class Model
                                           $this->doc_properties[] = DocProperty::fromPolymorphicReferences($polymorphic);
                                           LarEloquent::addUsage($this->table->name, $polymorphic->getMorphToClass());
                                           LarEloquent::addUsage($this->table->name, ...$polymorphic->getReturnableClasses());
+                                          ProviderBoot::addMorph($polymorphic->referencedTables());
                                           return "\n\t/**".
                                               "\n\t* Get associated with the ".model_name($polymorphic->table_name).
                                               "\n\t* @return ".basename($polymorphic->getMorphToClass()).
@@ -402,18 +403,19 @@ class Model
     }
 
     private function _write(string $path = null)
-    : void
+    : Model
     {
         $path = $path ?? Path::Combine(LarEloquent::config()->base_dir, model_name(LarEloquent::config()->base_abstract_prefix), model_file($this->name));
         $dir  = dirname($path);
         if (!file_exists($dir)) mkdir($dir, 0755, true);
         file_put_contents($path, $this.'');
+        return $this;
     }
 
     public static function Write(DBConnection $connection, DBTable $table)
-    : void
+    : Model
     {
-        (new Model($table, $connection))->_write();
+        return (new Model($table, $connection))->_write();
     }
 
     public function getColumn(string $name)

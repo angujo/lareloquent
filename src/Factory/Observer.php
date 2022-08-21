@@ -24,10 +24,10 @@ class Observer
     public function __construct(DBTable $table)
     {
         $this->table           = $table;
+        $this->template        = file_get_contents(Path::Template('observer.tpl'));
         $this->table_namespace = implode('\\', [LarEloquent::config()->namespace, $this->table_name = model_name($this->table->name)]);
         $this->name            = model_name($this->table_name.'_'.LarEloquent::config()->observer_suffix);
         $this->func_name       = method_name($table->name);
-        $this->template        = file_get_contents(Path::Template('observer.tpl'));
     }
 
     private function parseTemplate()
@@ -69,7 +69,7 @@ class Observer
     : void
     {
         $path = $path ?? Path::Combine(LarEloquent::config()->observers_dir, model_file($this->name));
-       // if (file_exists($path)) return;
+        if (file_exists($path)) return;
         if (!file_exists($dir = dirname($path))) mkdir($dir, 0755, true);
         file_put_contents($path, $this.'');
     }
@@ -77,6 +77,8 @@ class Observer
     public static function Write(DBTable $table)
     : void
     {
-        (new self($table))->_write();
+        $obs = new self($table);
+        $obs->_write();
+        ProviderBoot::addObserver($obs->table_namespace, implode('\\', [LarEloquent::config()->observer_namespace, $obs->name]));
     }
 }

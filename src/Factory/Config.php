@@ -11,9 +11,10 @@ use function Angujo\Lareloquent\str_rand;
  * @property Framework   $framework
  * @property string|null $model_class
  * @property string      $base_dir
+ * @property string      $base_namespace
  * @property string      $namespace
  * @property bool        $composite_keys
- * @property string      $eloquent_extension_name
+ * @property string      $eloquent_extension_dir
  * @property bool        $base_abstract
  * @property string      $base_abstract_prefix
  * @property bool        $define_connection
@@ -26,6 +27,10 @@ use function Angujo\Lareloquent\str_rand;
  * @property string      $observers_dir
  * @property string      $observer_namespace
  * @property string      $observer_suffix
+ * @property bool        $requests
+ * @property string      $requests_dir
+ * @property string      $request_namespace
+ * @property string      $request_suffix
  * @property bool        $date_base
  * @property bool        $db_directories
  * @property bool        $constant_column_names
@@ -82,6 +87,9 @@ class Config
         $key = strtolower($name);
         if (str_equal($key, 'base_abstract_prefix') && (!isset($this->configs[$key]) || empty($this->configs[$key]))) {
             $this->configs[$key] = 'Base';// str_rand(10, numbers: false, special_xters: false);
+        }
+        if (str_equal($key, 'eloquent_extension_dir') && (!isset($this->configs[$key]) || empty($this->configs[$key]))) {
+            $this->configs[$key] = 'Extensions';// str_rand(10, numbers: false, special_xters: false);
         }
         return $this->configs[$key] ?? null;
     }

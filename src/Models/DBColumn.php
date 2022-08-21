@@ -16,6 +16,7 @@ class DBColumn
     public string      $column_name;
     public string      $column_comment;
     public int|null    $ordinal_position;
+    public int|null    $character_maximum_length = null;
     public string|null $column_default;
     public string      $data_type;
     public bool        $is_nullable;

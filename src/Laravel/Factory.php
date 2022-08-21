@@ -42,7 +42,7 @@ class Factory
 
     }
 
-    public function runSchema(OutputStyle $output,DBConnection $connection)
+    public function runSchema(OutputStyle $output, DBConnection $connection)
     {
         $dbms    = new DBMS($this->connection);
         $lareloq = new LarEloquent($connection);
@@ -66,7 +66,7 @@ class Factory
         if (Config::db_directories()) $this->writeSchemaModel();
         self::$BAR->advance();
 
-        $lareloq->SetModels(
+        $lareloq->setModels(
             function(
                 \Angujo\Lareloquent\Models\DBTable $table){
                 self::$BAR->setFormat("%current%/%max% [%bar%] %percent:3s%% {$table->name}: %message%");
@@ -77,6 +77,7 @@ class Factory
                 self::$BAR->advance();
             }
         );
+        $lareloq->setExtensions();
         self::$BAR->setFormat("%current%/%max% [%bar%] %percent:3s%% %message%");
         self::$BAR->setMessage('Done!');
         self::$BAR->finish();

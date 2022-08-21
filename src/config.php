@@ -18,6 +18,10 @@ return
         /*
          * Namespace for the models
          */
+        'base_namespace'          => 'App',
+        /*
+         * Namespace for the models
+         */
         'namespace'               => 'App\Models',
         /*
          * Enable composite keys in laravel
@@ -27,10 +31,10 @@ return
          */
         'composite_keys'          => true,
         /*
-         * Name of class to be used in customizing Eloquent to accommodate package changes.
+         * Name of directory to be used to hold custom classes used by library.
          * E.g. models will be appended static class morphName() to allow access of relation name used.
          */
-        'eloquent_extension_name' => 'Extension',
+        'eloquent_extension_dir'  => 'Extension',
         /*
          * Create abstract classes to act as BASE abstract Class for the tables
          * It is HIGHLY RECOMMENDED to enable this.
@@ -71,6 +75,23 @@ return
          * If set to FALSE, you can use or call the [validation_method] above e.g. $user->validate(); before calling save
          */
         'validate_on_save'        => true,
+        /*
+         * Set if you want requests to be set up.
+         */
+        'requests'                => true,
+        /*
+         * Directory path to put the models' requests
+         */
+        'requests_dir'            => Path::Combine(ROOT_DIR, 'output', 'Requests'),
+        /*
+         * Namespace for the requests
+         */
+        'request_namespace'       => 'App\Models\Requests',
+        /*
+         * Suffix for the request's file and class name
+         * E.g. for model User + [observer_suffix='Request'] = UserRequest[.php]
+         */
+        'request_suffix'          => 'Request',
         /*
          * Set if you want observers to be set up.
          * If [validate_on_save] = TRUE, [observers] will be assumed to be TRUE, irrespective of value below.
