@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use function Angujo\Lareloquent\col_name_reference;
 use function Angujo\Lareloquent\in_plural;
 use function Angujo\Lareloquent\in_singular;
 use function Angujo\Lareloquent\method_name;
@@ -51,7 +52,7 @@ class DBReferential
             case Referential::ONETHROUGH:
                 return implode('_', [in_singular($this->fromColumnName(true)), in_singular($this->referenced_table_name)]);
             case Referential::MANYTHROUGH:
-                return implode('_', [in_singular($this->fromColumnName(true)), in_plural($this->referenced_table_name)]);
+                return implode('_', [in_singular(str_equal(col_name_reference($this->through_column_name), $this->table_name) ? $this->fromColumnName(true) : col_name_reference($this->through_column_name)), in_plural($this->referenced_table_name)]);
             case Referential::BELONGSTOMANY:
                 return in_plural(preg_replace('/_id(\s+)?$/', '', $this->through_ref_column_name));
             case Referential::BELONGSTO:
@@ -67,7 +68,7 @@ class DBReferential
 
     private function fromColumnName($ref = false)
     {
-        return preg_replace('/_id(\s+)?$/', '', $ref ? $this->referenced_column_name : $this->column_name);
+        return col_name_reference($ref ? $this->referenced_column_name : $this->column_name);
     }
 
     private function fromTableName($ref = false)

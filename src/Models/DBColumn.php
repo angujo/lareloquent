@@ -4,8 +4,13 @@ namespace Angujo\Lareloquent\Models;
 
 use Angujo\Lareloquent\DataType;
 use Angujo\Lareloquent\LarEloquent;
+use Angujo\Lareloquent\SQLType;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Laminas\Code\Generator\DocBlock\Tag\PropertyTag;
+use Laminas\Code\Generator\PropertyGenerator;
+use Laminas\Code\Generator\PropertyValueGenerator;
+use function Angujo\Lareloquent\model_name;
 use function Angujo\Lareloquent\str_equal;
 
 class DBColumn
@@ -14,6 +19,9 @@ class DBColumn
 
     public string      $table_name;
     public string      $column_name;
+    public string|null $referenced_table_name;
+    public string|null $column_type;
+    public string|null $referenced_column_name;
     public string      $column_comment;
     public int|null    $ordinal_position;
     public int|null    $character_maximum_length = null;
@@ -24,6 +32,35 @@ class DBColumn
     public bool        $is_unique;
     public bool        $increments;
     public bool        $is_updating;
+
+    public function isEnum()
+    {
+        return str_equal($this->data_type, SQLType::ENUM->value);
+    }
+
+    public function enumClass()
+    {
+        return implode('\\', [LarEloquent::config()->enum_namespace, model_name($this->table_name.'_'.$this->column_name)]);
+    }
+
+    public function constantName()
+    {
+        return strtoupper(LarEloquent::config()->constant_column_prefix.$this->column_name);
+    }
+
+    public function constantProperty()
+    {
+        return (new PropertyGenerator($this->constantName(), new PropertyValueGenerator($this->column_name), PropertyGenerator::FLAG_CONSTANT | PropertyGenerator::FLAG_FINAL));
+    }
+
+    public function docPropertyTag()
+    {
+        $types = [$this->isEnum() ? basename($this->enumClass()) : $this->dataType()];
+        if ($this->is_nullable) $types[] = 'null';
+        return (new PropertyTag($this->column_name))
+            ->setTypes($types)
+            ->setDescription($this->column_comment);
+    }
 
     public function isCreatedColumn()
     {
@@ -53,10 +90,11 @@ class DBColumn
     public function defaultValue()
     {
         return match ($this->PhpDataType()) {
-            DataType::DATETIME => str_contains(strtoupper($this->column_default), 'CURRENT_TIMESTAMP') ? null : var_export($this->column_default, true),
-            DataType::BOOL => var_export((bool)$this->column_default, true),
-            DataType::INT, DataType::FLOAT => $this->column_default,
-            default => var_export($this->column_default, true),
+            DataType::DATETIME => str_contains(strtoupper($this->column_default), 'CURRENT_TIMESTAMP') ? null : $this->column_default,
+            DataType::BOOL => (bool)$this->column_default,
+            DataType::INT => intval($this->column_default),
+            DataType::FLOAT => floatval($this->column_default),
+            default => $this->column_default,
         };
     }
 
@@ -69,37 +107,37 @@ class DBColumn
     : DataType
     {
         switch ($this->data_type) {
-            case 'tinyint':
+            case SQLType::TINYINT->value:
                 return DataType::BOOL;
-            case 'int':
-            case 'mediumint':
-            case 'bigint':
-            case 'smallint':
-            case 'year':
+            case SQLType::INT->value:
+            case SQLType::MEDIUMINT->value:
+            case SQLType::BIGINT->value:
+            case SQLType::SMALLINT->value:
+            case SQLType::YEAR->value:
                 return DataType::INT;
-            case 'float':
-            case 'double':
-            case 'decimal':
+            case SQLType::FLOAT->value:
+            case SQLType::DOUBLE->value:
+            case SQLType::DECIMAL->value:
                 return DataType::FLOAT;
-            case 'datetime':
-            case 'timestamp':
+            case SQLType::DATETIME->value:
+            case SQLType::TIMESTAMP->value:
                 return DataType::DATETIME;
-            case 'enum':
-            case 'json':
-            case 'text':
-            case 'mediumtext':
-            case 'set':
-            case 'char':
-            case 'binary':
-            case 'varbinary':
-            case 'blob':
-            case 'mediumblob':
-            case 'time':
-            case 'longblob':
-            case 'date':
-            case 'geometry':
-            case 'varchar':
-            case 'longtext':
+            case SQLType::ENUM->value:
+            case SQLType::JSON->value:
+            case SQLType::TEXT->value:
+            case SQLType::MEDIUMTEXT->value:
+            case SQLType::SET->value:
+            case SQLType::CHAR->value:
+            case SQLType::BINARY->value:
+            case SQLType::VARBINARY->value:
+            case SQLType::BLOB->value:
+            case SQLType::MEDIUMBLOB->value:
+            case SQLType::TIME->value:
+            case SQLType::LONGBLOB->value:
+            case SQLType::DATE->value:
+            case SQLType::GEOMETRY->value:
+            case SQLType::VARCHAR->value:
+            case SQLType::LONGTEXT->value:
             default:
                 return DataType::STRING;
         }
@@ -113,8 +151,8 @@ class DBColumn
     protected function setUses()
     {
         switch ($this->data_type) {
-            case 'datetime':
-            case 'timestamp':
+            case SQLType::DATETIME->value:
+            case SQLType::TIMESTAMP->value:
                 $this->addUse(Carbon::class);
                 break;
         }

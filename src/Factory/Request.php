@@ -15,35 +15,34 @@ use Laminas\Code\Generator\DocBlockGenerator;
 use Laminas\Code\Generator\FileGenerator;
 use Laminas\Code\Generator\MethodGenerator;
 use Laminas\Code\Generator\ValueGenerator;
-use function Angujo\Lareloquent\clean_template;
+use function Angujo\Lareloquent\flatten_array;
 use function Angujo\Lareloquent\method_name;
 use function Angujo\Lareloquent\model_file;
 use function Angujo\Lareloquent\model_name;
 use function Angujo\Lareloquent\str_equal;
 use function Angujo\Lareloquent\tag;
 
-class Request
+class Request extends FileCreator
 {
     private DBTable $table;
     /** @var array|DBColumn[] */
     private array  $columns;
     private string $table_name;
     private string $table_namespace;
-    private string $name;
 
-    private ClassGenerator $class;
+    private array $rules    = [];
+    private array $messages = [];
 
     public function __construct(DBTable $table, array $columns)
     {
-        $this->class           = new ClassGenerator();
         $this->columns         = $columns;
         $this->table           = $table;
         $this->table_namespace = implode('\\', [LarEloquent::config()->namespace, $this->table_name = model_name($this->table->name)]);
         $this->name            = model_name($this->table_name.'_'.LarEloquent::config()->request_suffix);
-        $this->class->setNamespaceName(LarEloquent::config()->request_namespace)
-                    ->setName($this->name)
-                    ->addUse(FormRequest::class)
-                    ->setExtendedClass(FormRequest::class);
+        $this->namespace       = LarEloquent::config()->request_namespace;
+        $this->parent_class    = FormRequest::class;
+        $this->dir             = LarEloquent::config()->requests_dir;
+        parent::__construct();
     }
 
     private function classDoc()
@@ -70,7 +69,7 @@ class Request
             ->setDocBlock((new DocBlockGenerator())
                               ->setShortDescription('Custom message for validation')
                               ->setTag(GeneralTag::returnTag('array')))
-            ->setBody('return [];');
+            ->setBody('return '.(new ValueGenerator($this->messages, ValueGenerator::TYPE_ARRAY_SHORT))->setIndentation('    ')->generate().';');
     }
 
     private function rulesMethod()
@@ -80,24 +79,25 @@ class Request
             ->setDocBlock((new DocBlockGenerator())
                               ->setShortDescription('Get the validation rules that apply to the request.')
                               ->setTag(GeneralTag::fromContent('return', 'array')))
-            ->setBody('return '.(new ValueGenerator($this->getRules(), ValueGenerator::TYPE_ARRAY_SHORT))->setIndentation('  ')->generate().';');
+            ->setBody('return '.(new ValueGenerator($this->rules, ValueGenerator::TYPE_ARRAY_SHORT))->setIndentation('    ')->generate().';');
     }
 
-    private function getRules()
+    private function parseRules()
     {
-        return array_filter(
-            array_combine(
-                array_map(function(DBColumn $col){ return $col->column_name; }, $this->columns),
-                array_map(function(DBColumn $column){
-                    $rules = $this->getRule($column);
-                    if (empty($rules)) return null;
-                    return $rules;
-                }, $this->columns)));
+        $this->rules    = array_filter(array_combine(
+                                           array_map(function(DBColumn $col){ return $col->column_name; }, $this->columns),
+                                           array_map(function(DBColumn $column){
+                                               $rules = $this->getRule($column);
+                                               if (empty($rules)) return null;
+                                               return $rules;
+                                           }, $this->columns)));
+        $this->messages = $this->getMessages();
     }
 
     private function getRule(DBColumn $column)
     {
         $rules = [];
+        if ($column->increments) return $rules;
         if (!$column->is_nullable) $rules[] = 'required';
         if (str_contains($column->column_name, 'email')) $rules[] = 'email';
         if (str_contains($column->column_name, 'url')) $rules[] = 'url';
@@ -110,32 +110,79 @@ class Request
         if ($column->PhpDataType() === DataType::FLOAT) $rules[] = 'numeric';
         if (!empty($column->character_maximum_length) && DataType::STRING === $column->PhpDataType()) $rules[] = "max:{$column->character_maximum_length}";
         if ($column->is_unique) $rules[] = "unique:{$this->table->name},{$column->column_name}";
+        if (!empty($column->referenced_column_name)) $rules[] = "exists:{$column->referenced_table_name},{$column->referenced_column_name}";
         return $rules;
     }
 
-    public function __toString()
-    : string
+    public function getMessages()
     {
-        return (new FileGenerator())
-            ->setClass(
-                $this->class->setDocBlock($this->classDoc())
-                            ->addMethodFromGenerator($this->authorizeMethod())
-                            ->addMethodFromGenerator($this->rulesMethod())
-                            ->addMethodFromGenerator($this->messagesMethod())
-            )->generate();
+        $msgs  = [];
+        $rules = array_unique(array_map(function($rl){
+            $arr = explode(':', $rl);
+            return array_shift($arr);
+        }, flatten_array($this->rules)));
+        foreach ($rules as $rule) {
+            if (array_key_exists($rule, $msgs)) continue;
+            $msg = 'Invalid';
+            switch ($rule) {
+                case 'required':
+                    $msg = 'The :attribute field is required and cannot be empty!';
+                    break;
+                case 'email':
+                    $msg = 'Ensure a valid email is entered!';
+                    break;
+                case 'url':
+                    $msg = 'Ensure a valid URL is entered!';
+                    break;
+                case 'uuid':
+                    $msg = 'Invalid UUID has been entered!';
+                    break;
+                case 'ip':
+                    $msg = 'Invalid IP Address was entered. Ensure valid ipv4 or ipv6 is used!';
+                    break;
+                case 'json':
+                    $msg = 'Ensure only valid array inputs are entered';
+                    break;
+                case 'image':
+                    $msg = 'Only images need to be uploaded';
+                    break;
+                case 'mac_address':
+                    $msg = 'Ensure valid mac address is entered!';
+                    break;
+                case 'integer':
+                    $msg = 'Only integers allowed for :attribute field!';
+                    break;
+                case 'numeric':
+                    $msg = 'Only numeric entries allowed for :attribute field!';
+                    break;
+                case 'max':
+                    $msg = 'Only a maximum of :values characters allowed!';
+                    break;
+                case 'unique':
+                    $msg = 'Entered value for :attribute already exist. Only unique values allowed!';
+                    break;
+                case 'exists':
+                    $msg = 'Ensure the referenced entry for :attribute already exist!';
+                    break;
+            }
+            $msgs[$rule] = $msg;
+        }
+        return $msgs;
     }
 
-    private function _write(string $path = null)
-    : void
+    private function compile()
     {
-        $path = $path ?? Path::Combine(LarEloquent::config()->requests_dir, model_file($this->name));
-        if (!file_exists($dir = dirname($path))) mkdir($dir, 0755, true);
-        file_put_contents($path, $this.'');
+        $this->parseRules();
+        $this->class->setDocBlock($this->classDoc())
+                    ->addMethodFromGenerator($this->authorizeMethod())
+                    ->addMethodFromGenerator($this->rulesMethod())
+                    ->addMethodFromGenerator($this->messagesMethod());
+        return $this;
     }
 
     public static function Write(DBTable $table, array $columns)
     : void
     {
-        (new self($table, $columns))->_write();
+        (new self($table, $columns))->compile()->_write();
     }
 }

@@ -8,7 +8,9 @@ use Angujo\Lareloquent\Factory\Model;
 use Angujo\Lareloquent\Factory\Observer;
 use Angujo\Lareloquent\Factory\ProviderBoot;
 use Angujo\Lareloquent\Factory\Request;
+use Angujo\Lareloquent\Factory\Resource;
 use Angujo\Lareloquent\Factory\WorkModel;
+use Angujo\Lareloquent\Factory\WorkResource;
 
 class LarEloquent
 {
@@ -41,6 +43,10 @@ class LarEloquent
             WorkModel::Write($table);
             if (LarEloquent::config()->observers) Observer::Write($table);
             if (LarEloquent::config()->requests) Request::Write($table, $model->columns);
+            if (LarEloquent::config()->resources) {
+                Resource::Write($table, $model->columns);
+                WorkResource::Write($table);
+            }
             if ($post && is_callable($pre)) $post($table);
         }
     }

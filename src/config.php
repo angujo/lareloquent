@@ -60,7 +60,7 @@ return
         /*
          * Set the date format for DB, serialization in array or json
          */
-        'date_format'             => null,
+        'date_format'             => 'yyyy-mm-dd HH:i:s',
         /*
          * Add a validation rule to every column and avail as $rules for each model
          */
@@ -75,6 +75,29 @@ return
          * If set to FALSE, you can use or call the [validation_method] above e.g. $user->validate(); before calling save
          */
         'validate_on_save'        => true,
+        /*
+         * Set if you want resources to be set up.
+         */
+        'resources'               => true,
+        /*
+         * Directory path to put the models' resources
+         */
+        'resources_dir'           => Path::Combine(ROOT_DIR, 'output', 'Resources'),
+        /*
+         * Namespace for the resources
+         */
+        'resource_namespace'      => 'App\Models\Resources',
+        /*
+         * Suffix for the request's file and class name
+         * E.g. for model User + [observer_suffix='Request'] = UserRequest[.php]
+         */
+        'resource_suffix'         => 'Resource',
+        /*
+         * Prefix for the abstract resource classes
+         * This will be used to extend the namespace and add dir for the base resources
+         * Default: Base
+         */
+        'base_resource_prefix'    => '',
         /*
          * Set if you want requests to be set up.
          */
@@ -114,6 +137,20 @@ return
          */
         'observer_suffix'         => 'Observer',
         /*
+         * Set if you want enums to be set up for the enum data type.
+         */
+        'enums'                   => true,
+        /*
+         * Directory path to put the models' enums
+         * Enums will be created for evey column of type enum
+         * Table name and column name will be used as the enum name.
+         */
+        'enums_dir'               => Path::Combine(ROOT_DIR, 'output', 'Enums'),
+        /*
+         * Namespace for the enums
+         */
+        'enum_namespace'          => 'App\Models\Enums',
+        /*
          * Enable to add @date on each Base Model every time it is run
          * If set to False, @date will be set on first instance
          */
@@ -133,7 +170,7 @@ return
          * set the prefix to use.
          * e.g. prefix = 'COL_' then column email becomes User::COL_EMAIL
          */
-        'constant_column_prefix'  => null,
+        'constant_column_prefix'  => 'COL_',
         /*
          * Column names that are used for soft delete.
          * If different naming across tables, add them here.
@@ -246,8 +283,8 @@ return
          * To cast data type e.g. tinyint(1) to be boolean,
          * start with "type:" followed by the type i.e. "type:tinyint(1)"=>'boolean'
          */
-        'type_casts'              => ['type:tinyint(1)' => 'boolean', '%_json' => 'array', '%_array' => 'array', 'is_%' => 'boolean',
-                                      'type:date'       => 'date:Y-m-d', 'type:datetime' => 'datetime:Y-m-d H:i:s'],
+        'type_casts'              => ['type:tinyint' => 'boolean', '%_json' => 'array', '%_array' => 'array', 'is_%' => 'boolean',
+                                      'type:date'    => 'date:Y-m-d', 'type:datetime' => 'datetime:Y-m-d H:i:s', 'type:timestamp' => 'datetime:Y-m-d H:i:s'],
         /*
          * Overwrite files during generation.
          * Will be overwritten by the -f(--force) option in artisan cli

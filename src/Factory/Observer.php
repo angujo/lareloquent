@@ -5,73 +5,55 @@ namespace Angujo\Lareloquent\Factory;
 use Angujo\Lareloquent\LarEloquent;
 use Angujo\Lareloquent\Models\DBTable;
 use Angujo\Lareloquent\Path;
-use function Angujo\Lareloquent\clean_template;
+use Laminas\Code\Generator\DocBlock\Tag\ParamTag;
+use Laminas\Code\Generator\DocBlock\Tag\ReturnTag;
+use Laminas\Code\Generator\DocBlockGenerator;
+use Laminas\Code\Generator\MethodGenerator;
+use Laminas\Code\Generator\ParameterGenerator;
 use function Angujo\Lareloquent\method_name;
 use function Angujo\Lareloquent\model_file;
 use function Angujo\Lareloquent\model_name;
 
-class Observer
+class Observer extends FileCreator
 {
-    private              $events = ['retrieved', 'creating', 'created', 'updating', 'updated', 'saving', 'saved', 'deleting', 'deleted',
-                                    'trashed', 'forceDeleted', 'restoring', 'restored', 'replicating',];
-    private DBTable      $table;
-    private string       $table_namespace;
-    private string       $table_name;
-    private string       $func_name;
-    private string|false $template;
-    private string       $name;
+    private         $events = ['retrieved', 'creating', 'created', 'updating', 'updated', 'saving', 'saved', 'deleting', 'deleted',
+                               'trashed', 'forceDeleted', 'restoring', 'restored', 'replicating',];
+    private DBTable $table;
+    private string  $table_name;
+    private string  $table_namespace;
 
     public function __construct(DBTable $table)
     {
-        $this->table           = $table;
-        $this->template        = file_get_contents(Path::Template('observer.tpl'));
-        $this->table_namespace = implode('\\', [LarEloquent::config()->namespace, $this->table_name = model_name($this->table->name)]);
-        $this->name            = model_name($this->table_name.'_'.LarEloquent::config()->observer_suffix);
-        $this->func_name       = method_name($table->name);
-    }
-
-    private function parseTemplate()
-    {
-        $this->template = str_replace(
-            ['{namespace}', '{table_namespace}', '{name}', '{events}'],
-            [LarEloquent::config()->observer_namespace, $this->table_namespace, $this->name, $this->runEvents()],
-            $this->template);
-        return $this;
+        $this->table = $table;
+        $this->name  = model_name(($this->table_name = model_name($this->table->name)).'_'.LarEloquent::config()->observer_suffix);
+        $this->dir   = LarEloquent::config()->observers_dir;
+        parent::__construct(false);
+        $this->class->setNamespaceName(LarEloquent::config()->observer_namespace)
+                    ->addUse($this->table_namespace = implode('\\', [LarEloquent::config()->namespace, $this->table_name]));
     }
 
     private function runEvents()
     {
-        return implode("\n\t\n", array_map(function($evt){ return $this->event($evt); }, $this->events));
+        foreach ($this->events as $event) {
+            $this->class->addMethodFromGenerator($this->eventMethod($event));
+        }
     }
 
-    private function event(string $event)
+    private function eventMethod(string $event)
     {
-        return "\t/**".
-            "\n\t* Handle the {$this->table_name} '{$event}' event.".
-            "\n\t*".
-            "\n\t* @param  {$this->table_name}  \${$this->func_name}".
-            "\n\t* @return void".
-            "\n\t*/".
-            "\n\tpublic function {$event}({$this->table_name} \${$this->func_name})".
-            "\n\t{".
-            "\n\t\t//TODO Add {$event} event actions here".
-            "\n\t}";
+        return (new MethodGenerator($event))
+            ->setDocBlock((new DocBlockGenerator("Handle the {$this->table_name} '{$event}' event."))
+                              ->setTag(new ParamTag(method_name($this->table->name), [$this->table_name]))
+                              ->setTag(new ReturnTag(['void'])))
+            ->setParameter(new ParameterGenerator(method_name($this->table->name), $this->table_namespace))
+            ->setBody("//TODO Add {$event} event actions here");
     }
 
     public function __toString()
     : string
     {
-        $this->parseTemplate();
-        return clean_template($this->template);
-    }
-
-    private function _write(string $path = null)
-    : void
-    {
-        $path = $path ?? Path::Combine(LarEloquent::config()->observers_dir, model_file($this->name));
-        if (file_exists($path)) return;
-        if (!file_exists($dir = dirname($path))) mkdir($dir, 0755, true);
-        file_put_contents($path, $this.'');
+        $this->runEvents();
+        return parent::__toString();
     }
 
     public static function Write(DBTable $table)

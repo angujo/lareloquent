@@ -27,6 +27,14 @@ use function Angujo\Lareloquent\str_rand;
  * @property string      $observers_dir
  * @property string      $observer_namespace
  * @property string      $observer_suffix
+ * @property bool        $resources
+ * @property string      $resources_dir
+ * @property string      $resource_namespace
+ * @property string      $resource_suffix
+ * @property string      $base_resource_prefix
+ * @property bool        $enums
+ * @property string      $enums_dir
+ * @property string      $enum_namespace
  * @property bool        $requests
  * @property string      $requests_dir
  * @property string      $request_namespace
@@ -85,8 +93,8 @@ class Config
     public function __get(string $name)
     {
         $key = strtolower($name);
-        if (str_equal($key, 'base_abstract_prefix') && (!isset($this->configs[$key]) || empty($this->configs[$key]))) {
-            $this->configs[$key] = 'Base';// str_rand(10, numbers: false, special_xters: false);
+        if (in_array($key, ['base_abstract_prefix', 'base_resource_prefix']) && (!isset($this->configs[$key]) || empty($this->configs[$key]))) {
+            $this->configs[$key] = 'Base';
         }
         if (str_equal($key, 'eloquent_extension_dir') && (!isset($this->configs[$key]) || empty($this->configs[$key]))) {
             $this->configs[$key] = 'Extensions';// str_rand(10, numbers: false, special_xters: false);

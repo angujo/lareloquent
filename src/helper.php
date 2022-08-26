@@ -28,6 +28,37 @@ namespace Angujo\Lareloquent {
         case DATETIME = 'datetime';
     }
 
+    enum SQLType: string
+    {
+        case TINYINT = 'tinyint';
+        case INT = 'int';
+        case MEDIUMINT = 'mediumint';
+        case BIGINT = 'bigint';
+        case SMALLINT = 'smallint';
+        case YEAR = 'year';
+        case FLOAT = 'float';
+        case DOUBLE = 'double';
+        case DECIMAL = 'decimal';
+        case DATETIME = 'datetime';
+        case TIMESTAMP = 'timestamp';
+        case ENUM = 'enum';
+        case JSON = 'json';
+        case TEXT = 'text';
+        case MEDIUMTEXT = 'mediumtext';
+        case SET = 'set';
+        case CHAR = 'char';
+        case BINARY = 'binary';
+        case VARBINARY = 'varbinary';
+        case BLOB = 'blob';
+        case MEDIUMBLOB = 'mediumblob';
+        case TIME = 'time';
+        case LONGBLOB = 'longblob';
+        case DATE = 'date';
+        case GEOMETRY = 'geometry';
+        case VARCHAR = 'varchar';
+        case LONGTEXT = 'longtext';
+    }
+
     enum Framework
     {
         case LARAVEL;
@@ -65,6 +96,22 @@ namespace Angujo\Lareloquent {
                                    '/(^|[^A-Za-z\d])([a-zA-Z])([A-Z]+|[a-z\d]+)/',
                                    function($matches){ return strtoupper($matches[2]).strtolower($matches[3]); },
                                    $txt));
+        }
+    }
+
+    if (!function_exists('col_name_reference')) {
+        function col_name_reference(string $txt)
+        : string
+        {
+            return preg_replace('/_id(\s+)?$/', '', $txt);
+        }
+    }
+
+    if (!function_exists('enum_case')) {
+        function enum_case(string $txt)
+        : string
+        {
+            return strtoupper(preg_replace(['/^[^a-z_]+/', '/[^a-z\d_]+/'], ['_', '_'], strtolower($txt)));
         }
     }
 

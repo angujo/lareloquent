@@ -3,6 +3,8 @@
 namespace Angujo\Lareloquent\Models;
 
 use Angujo\Lareloquent\LarEloquent;
+use Laminas\Code\Generator\DocBlock\Tag\PropertyTag;
+use Laminas\Code\Generator\PropertyGenerator;
 use function Angujo\Lareloquent\in_plural;
 use function Angujo\Lareloquent\method_name;
 use function Angujo\Lareloquent\model_name;
@@ -27,13 +29,41 @@ class DocProperty
         return $m;
     }
 
+    public static function column(DBColumn $column)
+    {
+        $types = [$column->dataType()];
+        if ($column->is_nullable) $types[] = 'null';
+        return (new PropertyTag($column->column_name))
+            ->setTypes($types)
+            ->setDescription($column->column_comment);
+    }
+
+    public static function referentialTag(DBReferential $referential)
+    : PropertyTag
+    {
+        return (new PropertyTag($referential->functionName()))
+            ->setTypes($referential->getDataTypeClass());
+    }
+
+    public static function polymorphicRefTag(Polymorphic $polymorphic)
+    {
+        return (new PropertyTag($polymorphic->actionName()))
+            ->setTypes(array_map(function($tbl){ return model_name($tbl); }, $polymorphic->referencedTables()));
+    }
+
+    public static function polymorphicManyTag(Polymorphic $polymorphic)
+    {
+        return (new PropertyTag(method_name(in_plural($polymorphic->table_name))))
+            ->setTypes(model_name($polymorphic->table_name).'[]');
+    }
+
     public static function fromReferential(DBReferential $referential, \Closure $getColumn = null)
     : DocProperty
     {
         $m              = new self();
         $m->name        = $referential->functionName();
         $m->dataTypes[] = $referential->getDataTypeClass();
-        LarEloquent::addUsage($referential->table_name,LarEloquent::config()->namespace.'\\'.model_name( $referential->referenced_table_name));
+        LarEloquent::addUsage($referential->table_name, LarEloquent::config()->namespace.'\\'.model_name($referential->referenced_table_name));
         if (is_callable($getColumn) && !is_null($column = $getColumn($referential->referenced_column_name)) && is_a($column, DBColumn::class) && $column->is_nullable) $m->dataTypes[] = 'null';
         return $m;
     }
@@ -43,18 +73,18 @@ class DocProperty
     {
         $m            = new self();
         $m->name      = $polymorphic->actionName();
-        $m->dataTypes =$refs= array_map(function($tbl){ return model_name($tbl); }, $polymorphic->referencedTables());
-        LarEloquent::addUsage($polymorphic->table_name,...array_map(function($tbl)use($polymorphic){return LarEloquent::config()->namespace.'\\'.model_name( $tbl);},$refs));
+        $m->dataTypes = $refs = array_map(function($tbl){ return model_name($tbl); }, $polymorphic->referencedTables());
+        LarEloquent::addUsage($polymorphic->table_name, ...array_map(function($tbl) use ($polymorphic){ return LarEloquent::config()->namespace.'\\'.model_name($tbl); }, $refs));
         return $m;
     }
 
-    public static function fromPolymorphicMany(Polymorphic $polymorphic,$tbl_name)
+    public static function fromPolymorphicMany(Polymorphic $polymorphic, $tbl_name)
     : DocProperty
     {
         $m              = new self();
         $m->name        = method_name(in_plural($polymorphic->table_name));
         $m->dataTypes[] = model_name($polymorphic->table_name).'[]';
-        LarEloquent::addUsage($tbl_name,LarEloquent::config()->namespace.'\\'.model_name( $polymorphic->table_name));
+        LarEloquent::addUsage($tbl_name, LarEloquent::config()->namespace.'\\'.model_name($polymorphic->table_name));
         return $m;
     }
 
