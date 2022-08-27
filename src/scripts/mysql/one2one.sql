@@ -5,4 +5,4 @@ join information_schema.KEY_COLUMN_USAGE cu on kcu.COLUMN_NAME =cu.COLUMN_NAME a
 join (select ku.CONSTRAINT_NAME,ku.TABLE_SCHEMA,ku.TABLE_NAME from information_schema.KEY_COLUMN_USAGE ku
     join information_schema.TABLE_CONSTRAINTS tc on tc.TABLE_SCHEMA=ku.TABLE_SCHEMA and tc.TABLE_NAME=ku.TABLE_NAME and tc.CONSTRAINT_NAME=ku.CONSTRAINT_NAME and tc.CONSTRAINT_TYPE='UNIQUE'
     group by ku.CONSTRAINT_NAME,ku.TABLE_NAME,ku.TABLE_SCHEMA having count(1)<2) u on cu.CONSTRAINT_NAME=u.CONSTRAINT_NAME and cu.TABLE_NAME=u.TABLE_NAME and u.TABLE_SCHEMA = cu.TABLE_SCHEMA
-where kcu.TABLE_SCHEMA='{db}' and kcu.REFERENCED_TABLE_NAME='{tbl}';
+where kcu.TABLE_SCHEMA='{db}' and kcu.REFERENCED_TABLE_NAME='{tbl}'

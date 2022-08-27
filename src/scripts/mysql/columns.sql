@@ -13,4 +13,4 @@ from information_schema.`COLUMNS` c
                              join information_schema.KEY_COLUMN_USAGE kcu on kcu.TABLE_SCHEMA =rc.CONSTRAINT_SCHEMA and kcu.CONSTRAINT_NAME =rc.CONSTRAINT_NAME ) r
                    on r.CONSTRAINT_SCHEMA = c.TABLE_SCHEMA and r.TABLE_NAME=c.TABLE_NAME  and r.COLUMN_NAME =c.COLUMN_NAME
 where c.TABLE_SCHEMA = '{db}' and c.TABLE_NAME = '{tbl}'
-order by c.TABLE_NAME, c.ORDINAL_POSITION;
+order by c.TABLE_NAME, c.ORDINAL_POSITION

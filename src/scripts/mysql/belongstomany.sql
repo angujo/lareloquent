@@ -19,4 +19,4 @@ from information_schema.REFERENTIAL_CONSTRAINTS rc
              join information_schema.KEY_COLUMN_USAGE kcu
                   on kcu.CONSTRAINT_NAME = r.CONSTRAINT_NAME and kcu.TABLE_NAME = r.TABLE_NAME and kcu.TABLE_SCHEMA = r.CONSTRAINT_SCHEMA
 ) a on a.constraint_schema=rc.CONSTRAINT_SCHEMA and a.table_name=rc.TABLE_NAME  and a.referenced_table_name=rc.REFERENCED_TABLE_NAME
-where rc.CONSTRAINT_SCHEMA ='{db}' and rc.TABLE_NAME in ({pivots}) and rc.REFERENCED_TABLE_NAME ='{tbl}';
+where rc.CONSTRAINT_SCHEMA ='{db}' and rc.TABLE_NAME in ({pivots}) and rc.REFERENCED_TABLE_NAME ='{tbl}'

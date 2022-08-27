@@ -64,10 +64,14 @@ class ModelCommand extends Command
             LarEloquent::config()->overwrite = true;
         }
         $this->setConfigs();
-        $this->factory->runSchema($this->output, DBConnection::fromConfig());
+        try {
+            $this->factory->runSchema($this->output, DBConnection::fromConfig());
 
-        return 0;
-        // var_dump(Config::all());
+            return 0;
+        } catch (\Exception $exception) {
+            $this->output->error($exception->getMessage());
+            return 1;
+        }
     }
 
     private function setConfigs()
