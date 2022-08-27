@@ -3,7 +3,6 @@
 namespace Angujo\Lareloquent {
 
     use Angujo\Lareloquent\Models\GeneralTag;
-    use Laminas\Code\Reflection\DocBlock\Tag\LicenseTag;
     use plejus\PhpPluralize\Inflector;
 
     define('BASE_DIR', dirname(__FILE__));
@@ -161,14 +160,6 @@ namespace Angujo\Lareloquent {
         : GeneralTag
         {
             return (new GeneralTag(name: $name, description: $description));
-        }
-    }
-
-    if (!function_exists('clean_template')) {
-        function clean_template(string $content)
-        : string
-        {
-            return preg_replace(['/([\n\s\r]+)?\{(.*?)\}/', '/\n{2,}/'], ['', ""], $content);
         }
     }
 

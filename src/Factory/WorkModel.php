@@ -3,16 +3,9 @@
 namespace Angujo\Lareloquent\Factory;
 
 use Angujo\Lareloquent\LarEloquent;
-use Angujo\Lareloquent\Models\DBColumn;
 use Angujo\Lareloquent\Models\DBTable;
-use Angujo\Lareloquent\Models\DocProperty;
 use Angujo\Lareloquent\Models\HasUsage;
-use Angujo\Lareloquent\Path;
-use Laminas\Code\Generator\ClassGenerator;
 use Laminas\Code\Generator\DocBlockGenerator;
-use Laminas\Code\Generator\FileGenerator;
-use function Angujo\Lareloquent\clean_template;
-use function Angujo\Lareloquent\model_file;
 use function Angujo\Lareloquent\model_name;
 
 class WorkModel extends FileCreator

@@ -1,7 +1,7 @@
 <?php
 /**
  * @author       bangujo ON 2021-04-18 02:49
- * @project      elolara
+ * @project      lareloquent
  * @ide          PhpStorm
  * @originalFile ModelCommand.php
  */
@@ -9,7 +9,7 @@
 namespace Angujo\Lareloquent\Laravel;
 
 
-use Angujo\Elolara\Config;
+use Angujo\Lareloquent\Factory\DBConnection;
 use Angujo\Lareloquent\LarEloquent;
 use Illuminate\Console\Command;
 
@@ -29,11 +29,11 @@ class ModelCommand extends Command
     protected $description = 'Parse DB schema tables into models';
 
     /** @var Factory */
-    private $factory;
-    private $migrate    = false;
-    private $connection = null;
-    private $database   = null;
-    private $force      = false;
+    private Factory     $factory;
+    private bool        $migrate  = false;
+    private string      $conn_name;
+    private string|null $database = null;
+    private bool        $force    = false;
 
     public function __construct(Factory $factory)
     {
@@ -49,10 +49,10 @@ class ModelCommand extends Command
 
     private function singleCommand()
     {
-        $this->force      = $this->option('force');
-        $this->migrate    = $this->option('migrate');
-        $this->connection = $this->option('connection') ?? $this->connection;
-        $this->database   = $this->option('database') ?? $this->database;
+        $this->force     = $this->option('force');
+        $this->migrate   = $this->option('migrate');
+        $this->conn_name = $this->option('connection') ?? $this->conn_name;
+        $this->database  = $this->option('database') ?? $this->database;
     }
 
     private function processCommand()
@@ -64,7 +64,7 @@ class ModelCommand extends Command
             LarEloquent::config()->overwrite = true;
         }
         $this->setConfigs();
-        $this->factory->runSchema($this->output);
+        $this->factory->runSchema($this->output, DBConnection::fromConfig());
 
         return 0;
         // var_dump(Config::all());
@@ -72,7 +72,7 @@ class ModelCommand extends Command
 
     private function setConfigs()
     {
-        LarEloquent::config()->command['name']     = $conn_name = $this->connection ?? config('database.default');
+        LarEloquent::config()->command['name']     = $conn_name = ($this->conn_name ?? config('database.default'));
         LarEloquent::config()->command['dbms']     = config("database.connections.{$conn_name}.driver");
         LarEloquent::config()->command['host']     = config("database.connections.{$conn_name}.host");
         LarEloquent::config()->command['dbname']   = $this->database ?? config("database.connections.{$conn_name}.database");

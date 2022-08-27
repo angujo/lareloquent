@@ -8,21 +8,31 @@
       "src/helper.php"
     ],
     "psr-4": {
-      "Angujo\\Lareloquent\\": "src/",
-      "App\\Models\\": "output/"
+      "Angujo\\Lareloquent\\": "src/"
     }
   },
   "authors": [
     {
-      "name": "angujo",
+      "name": "Barrack Angujo",
       "email": "angujomondi@gmail.com"
     }
   ],
   "minimum-stability": "dev",
   "require": {
+    "php": "^8.1",
     "paragonie/easydb": "3",
     "nesbot/carbon": "3.x-dev",
     "plejus/pluralize": "dev-master",
     "laminas/laminas-code": "4.7.x-dev"
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Angujo\\Lareloquent\\Laravel\\LarEloquentServiceProvider"
+      ],
+      "aliases": {
+        "LarEloquent": "Angujo\\Lareloquent\\Laravel\\Factory"
+      }
+    }
   }
 }

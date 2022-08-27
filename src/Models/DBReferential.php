@@ -2,13 +2,13 @@
 
 namespace Angujo\Lareloquent\Models;
 
-use Angujo\Elolara\Model\Relations\HasOneThrough;
 use Angujo\Lareloquent\Referential;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use function Angujo\Lareloquent\col_name_reference;
 use function Angujo\Lareloquent\in_plural;
 use function Angujo\Lareloquent\in_singular;
