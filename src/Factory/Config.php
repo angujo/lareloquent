@@ -3,6 +3,7 @@
 namespace Angujo\Lareloquent\Factory;
 
 use Angujo\Lareloquent\Enums\Framework;
+use Angujo\Lareloquent\LarEloquent;
 use Angujo\Lareloquent\Path;
 use function Angujo\Lareloquent\str_equal;
 
@@ -80,7 +81,7 @@ class Config
 
     public function __construct()
     {
-        $this->configs = array_merge(include(Path::Combine(BASE_DIR, "config.php")));
+        $this->configs = array_merge(include(Path::Combine(BASE_DIR, "config.php")), is_callable('config') ? config(LarEloquent::LM_APP_NAME) : []);
     }
 
     public function isLaravel()
