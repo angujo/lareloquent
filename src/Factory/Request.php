@@ -2,7 +2,7 @@
 
 namespace Angujo\Lareloquent\Factory;
 
-use Angujo\Lareloquent\DataType;
+use Angujo\Lareloquent\Enums\DataType;
 use Angujo\Lareloquent\LarEloquent;
 use Angujo\Lareloquent\Models\DBColumn;
 use Angujo\Lareloquent\Models\DBTable;

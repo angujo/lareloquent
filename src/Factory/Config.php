@@ -2,7 +2,7 @@
 
 namespace Angujo\Lareloquent\Factory;
 
-use Angujo\Lareloquent\Framework;
+use Angujo\Lareloquent\Enums\Framework;
 use Angujo\Lareloquent\Path;
 use function Angujo\Lareloquent\str_equal;
 

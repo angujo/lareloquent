@@ -8,7 +8,7 @@ use Angujo\Lareloquent\Models\DBReferential;
 use Angujo\Lareloquent\Models\DBTable;
 use Angujo\Lareloquent\Models\Polymorphic;
 use Angujo\Lareloquent\Path;
-use Angujo\Lareloquent\Referential;
+use Angujo\Lareloquent\Enums\Referential;
 use ParagonIE\EasyDB\EasyDB;
 use ParagonIE\EasyDB\Factory;
 

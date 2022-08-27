@@ -2,9 +2,9 @@
 
 namespace Angujo\Lareloquent\Models;
 
-use Angujo\Lareloquent\DataType;
+use Angujo\Lareloquent\Enums\DataType;
 use Angujo\Lareloquent\LarEloquent;
-use Angujo\Lareloquent\SQLType;
+use Angujo\Lareloquent\Enums\SQLType;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laminas\Code\Generator\DocBlock\Tag\PropertyTag;

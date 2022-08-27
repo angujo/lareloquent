@@ -1,6 +1,6 @@
 <?php
 
-use Angujo\Lareloquent\Framework;
+use Angujo\Lareloquent\Enums\Framework;
 use Angujo\Lareloquent\Path;
 
 return

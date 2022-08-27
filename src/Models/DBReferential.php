@@ -2,7 +2,7 @@
 
 namespace Angujo\Lareloquent\Models;
 
-use Angujo\Lareloquent\Referential;
+use Angujo\Lareloquent\Enums\Referential;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;

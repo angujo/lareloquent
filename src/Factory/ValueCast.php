@@ -4,21 +4,20 @@ namespace Angujo\Lareloquent\Factory;
 
 use Angujo\Lareloquent\LarEloquent;
 use Angujo\Lareloquent\Models\DBColumn;
-use Angujo\Lareloquent\SQLType;
+use Angujo\Lareloquent\Enums\SQLType;
 use Illuminate\Database\Eloquent\Casts\AsStringable;
 use function Angujo\Lareloquent\str_equal;
 
 class ValueCast
 {
-    private string   $data_type;
     private DBColumn $column;
 
-    protected static array $lar_casts = ['array', AsStringable::class, 'boolean', 'collection', 'date', 'datetime',
+    /*protected static array $lar_casts = ['array', AsStringable::class, 'boolean', 'collection', 'date', 'datetime',
                                          'immutable_date', 'immutable_datetime', 'double', 'encrypted',
                                          'encrypted:array', 'encrypted:collection', 'encrypted:object', 'float', 'integer',
                                          'object', 'real', 'string', 'timestamp',];
 
-    protected static array $lar_regx_casts = ['/decimal:(\d+)/',];
+    protected static array $lar_regx_casts = ['/decimal:(\d+)/',];*/
 
     public function __construct(DBColumn $column)
     {
@@ -31,15 +30,6 @@ class ValueCast
             if ($this->validType($type) || $this->validColumnName($type)) {
                 return  $cast;
             }
-        }
-        return null;
-    }
-
-    public function locate()
-    {
-        if (in_array(strtolower($this->data_type), array_map('strtolower', self::$lar_casts))) return $this->data_type;
-        foreach (self::$lar_regx_casts as $lar_regx_cast) {
-            if (preg_match($lar_regx_cast, $this->data_type)) return $this->data_type;
         }
         return null;
     }

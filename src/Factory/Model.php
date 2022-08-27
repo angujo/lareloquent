@@ -2,7 +2,7 @@
 
 namespace Angujo\Lareloquent\Factory;
 
-use Angujo\Lareloquent\DataType;
+use Angujo\Lareloquent\Enums\DataType;
 use Angujo\Lareloquent\LarEloquent;
 use Angujo\Lareloquent\Models\DBColumn;
 use Angujo\Lareloquent\Models\DBReferential;
@@ -13,7 +13,7 @@ use Angujo\Lareloquent\Models\HasTraits;
 use Angujo\Lareloquent\Models\HasUsage;
 use Angujo\Lareloquent\Models\Polymorphic;
 use Angujo\Lareloquent\Path;
-use Angujo\Lareloquent\SQLType;
+use Angujo\Lareloquent\Enums\SQLType;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Laminas\Code\Generator\DocBlock\Tag\VarTag;
