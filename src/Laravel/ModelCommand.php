@@ -30,10 +30,10 @@ class ModelCommand extends Command
 
     /** @var Factory */
     private Factory     $factory;
-    private bool        $migrate  = false;
-    private string      $conn_name;
-    private string|null $database = null;
-    private bool        $force    = false;
+    private bool        $migrate   = false;
+    private string|null $conn_name = null;
+    private string|null $database  = null;
+    private bool        $force     = false;
 
     public function __construct(Factory $factory)
     {
