@@ -9,11 +9,21 @@ use Angujo\Lareloquent\Factory\ValueCast;
 use Angujo\Lareloquent\LarEloquent;
 use Angujo\Lareloquent\Models\DBColumn;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Laminas\Code\Generator\AbstractMemberGenerator;
+use Laminas\Code\Generator\DocBlock\Tag\MethodTag;
+use Laminas\Code\Generator\DocBlock\Tag\ParamTag;
+use Laminas\Code\Generator\DocBlock\Tag\ReturnTag;
 use Laminas\Code\Generator\DocBlock\Tag\VarTag;
 use Laminas\Code\Generator\DocBlockGenerator;
+use Laminas\Code\Generator\MethodGenerator;
+use Laminas\Code\Generator\ParameterGenerator;
 use Laminas\Code\Generator\PropertyGenerator;
+use function Angujo\Lareloquent\in_plural;
+use function Angujo\Lareloquent\method_name;
+use function Angujo\Lareloquent\model_name;
 use function Angujo\Lareloquent\str_equal;
 
 trait HasLaravelProperties
@@ -31,26 +41,52 @@ trait HasLaravelProperties
             }
             $this->class->getDocBlock()->setTag($column->docPropertyTag());
             if (!isset($this->primaryCol) && $column->is_primary) $this->primaryCol = $column;
-            if (LarEloquent::config()->constant_column_names && !is_a($this, TraitModel::class)) {
+            if (LarEloquent::config()->constant_column_names && !is_a($this, TraitModel::class) && !$this->class->hasConstant($column->constantName())) {
                 $this->class->addConstantFromGenerator($column->constantProperty());
             }
 
             if (!isset($this->createdCol) && $column->isCreatedColumn()) {
                 if (!str_equal('created_at', ($this->createdCol = $column)->column_name)) {
-                    $this->class->addConstant('created_at', $this->createdCol->column_name, true);
+                    $this->class->addConstant('CREATED_AT', $this->createdCol->column_name, true);
                 }
             }
             if (!isset($this->updatedCol) && $column->isUpdatedColumn()) {
                 if (!str_equal('updated_at', ($this->updatedCol = $column)->column_name)) {
-                    $this->class->addConstant('updated_at', $this->updatedCol->column_name, true);
+                    $this->class->addConstant('UPDATED_AT', $this->updatedCol->column_name, true);
                 }
             }
             if (!isset($this->deletedCol) && $column->isDeletedColumn()) {
                 if (!str_equal('deleted_at', ($this->deletedCol = $column)->column_name)) {
-                    $this->class->addConstant('deleted_at', $this->deletedCol->column_name, true);
+                    $this->class->addConstant('DELETED_AT', $this->deletedCol->column_name, true)
+                                ->addUse(SoftDeletes::class)
+                                ->addTrait('SoftDeletes');
                 }
             }
         }
+        return $this;
+    }
+
+    private function localScopes()
+    {
+        if (!(is_array(LarEloquent::config()->local_scopes) && array_key_exists($this->table->name, LarEloquent::config()->local_scopes))) return $this;
+        $scopeMethod = function($name){
+            $mName = method_name('scope_'.$name);
+            return (new MethodGenerator($mName))
+                ->setDocBlock((new DocBlockGenerator('Local Scope Query for '.$name.' '.in_plural(model_name($this->table->name))))
+                                  ->setTag(new ParamTag('query', ['Builder']))
+                                  ->setTag(new ReturnTag(['Builder', 'void'])))
+                ->setAbstract(true)
+                ->setParameter(new ParameterGenerator('query'));
+        };
+        $scopes      = is_array(LarEloquent::config()->local_scopes[$this->table->name]) ? LarEloquent::config()->local_scopes[$this->table->name] : [LarEloquent::config()->local_scopes[$this->table->name]];
+        foreach (array_filter($scopes) as $scope) {
+            $this->class->addUse(Builder::class)
+                        ->addMethodFromGenerator($scopeMethod($scope))
+                        ->getDocBlock()
+                        ->setTag((new MethodTag(method_name($scope)))
+                                     ->setTypes('Builder'));
+        }
+
         return $this;
     }
 

@@ -5,6 +5,7 @@ namespace Angujo\Lareloquent\Factory;
 use Angujo\Lareloquent\LarEloquent;
 use Angujo\Lareloquent\Models\DBColumn;
 use Angujo\Lareloquent\Enums\SQLType;
+use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Casts\AsStringable;
 use function Angujo\Lareloquent\str_equal;
 
@@ -19,16 +20,29 @@ class ValueCast
 
     protected static array $lar_regx_casts = ['/decimal:(\d+)/',];*/
 
+
     public function __construct(DBColumn $column)
     {
         $this->column = $column;
     }
 
+    private function defaultCasts()
+    {
+        return [
+            'type:datetime'  => 'datetime:'.(LarEloquent::config()->date_format ?: 'Y-m-d H:i:s'),
+            'type:timestamp' => 'datetime:'.(LarEloquent::config()->date_format ?: 'Y-m-d H:i:s'),
+            'type:json'      => AsArrayObject::class,
+            'type:bool'      => 'boolean',
+            'type:boolean'   => 'boolean',
+        ];
+    }
+
     private function _getCast()
     {
-        foreach (LarEloquent::config()->type_casts as $type => $cast) {
+        $casts = array_merge($this->defaultCasts(), LarEloquent::config()->type_casts);
+        foreach ($casts as $type => $cast) {
             if ($this->validType($type) || $this->validColumnName($type)) {
-                return  $cast;
+                return $cast;
             }
         }
         return null;
@@ -50,5 +64,5 @@ class ValueCast
     public static function getCast(DBColumn $column)
     {
         return (new self($column))->_getCast();
-}
+    }
 }

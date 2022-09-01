@@ -7,6 +7,7 @@ use Angujo\Lareloquent\LarEloquent;
 use Angujo\Lareloquent\Enums\SQLType;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Laminas\Code\Generator\AbstractMemberGenerator;
 use Laminas\Code\Generator\DocBlock\Tag\PropertyTag;
 use Laminas\Code\Generator\PropertyGenerator;
 use Laminas\Code\Generator\PropertyValueGenerator;
@@ -45,12 +46,12 @@ class DBColumn
 
     public function constantName()
     {
-        return strtoupper(LarEloquent::config()->constant_column_prefix.$this->column_name);
+        return strtoupper(LarEloquent::config()->constant_column_prefix.preg_replace(['/(^[^a-zA-Z]+)|([^a-zA-Z\d]+$)/','/[^a-zA-Z0-9]+/'],['','_'],$this->column_name));
     }
 
     public function constantProperty()
     {
-        return (new PropertyGenerator($this->constantName(), new PropertyValueGenerator($this->column_name), PropertyGenerator::FLAG_CONSTANT | PropertyGenerator::FLAG_FINAL));
+        return (new PropertyGenerator($this->constantName(), new PropertyValueGenerator($this->column_name), PropertyGenerator::FLAG_CONSTANT | AbstractMemberGenerator::FLAG_FINAL));
     }
 
     public function docPropertyTag()

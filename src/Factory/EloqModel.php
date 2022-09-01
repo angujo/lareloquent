@@ -30,7 +30,7 @@ abstract class EloqModel extends FileCreator
         $this->table        = $table;
         $this->name         = model_name(LarEloquent::config()->base_abstract_prefix.'_'.$this->table->name);
         $this->connection   = $connection;
-        $this->parent_class = LarEloquent::config()->model_class;
+        $this->parent_class = array_key_exists($this->table->name, LarEloquent::config()->custom_extends) && !empty(LarEloquent::config()->custom_extends[$table->name]) && is_string(LarEloquent::config()->custom_extends[$table->name]) ? LarEloquent::config()->custom_extends[$table->name] : LarEloquent::config()->model_class;
         $this->namespace    = LarEloquent::config()->namespace.'\\'.model_name(LarEloquent::config()->base_abstract_prefix);
         $this->dir          = Path::Combine(LarEloquent::config()->base_dir, model_name(LarEloquent::config()->base_abstract_prefix));
         parent::__construct();
@@ -49,6 +49,7 @@ abstract class EloqModel extends FileCreator
             ->date_format()
             ->attributes()
             ->typeCasts()
+            ->localScopes()
             ->one2One()
             ->belongsTo()
             ->belongsToMany()
