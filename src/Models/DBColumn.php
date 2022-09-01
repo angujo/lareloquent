@@ -3,6 +3,7 @@
 namespace Angujo\Lareloquent\Models;
 
 use Angujo\Lareloquent\Enums\DataType;
+use Angujo\Lareloquent\Factory\ValueCast;
 use Angujo\Lareloquent\LarEloquent;
 use Angujo\Lareloquent\Enums\SQLType;
 use Carbon\Carbon;
@@ -34,6 +35,13 @@ class DBColumn
     public bool        $increments;
     public bool        $is_updating;
 
+    private ValueCast|null $valueCast = null;
+
+    public function cast()
+    {
+        return ($this->valueCast ?? ($this->valueCast = new ValueCast($this)))->_getCast();
+    }
+
     public function isEnum()
     {
         return str_equal($this->data_type, SQLType::ENUM->value);
@@ -46,7 +54,7 @@ class DBColumn
 
     public function constantName()
     {
-        return strtoupper(LarEloquent::config()->constant_column_prefix.preg_replace(['/(^[^a-zA-Z]+)|([^a-zA-Z\d]+$)/','/[^a-zA-Z0-9]+/'],['','_'],$this->column_name));
+        return strtoupper(LarEloquent::config()->constant_column_prefix.preg_replace(['/(^[^a-zA-Z]+)|([^a-zA-Z\d]+$)/', '/[^a-zA-Z0-9]+/'], ['', '_'], $this->column_name));
     }
 
     public function constantProperty()
@@ -56,7 +64,10 @@ class DBColumn
 
     public function docPropertyTag()
     {
-        $types = [$this->isEnum() ? basename($this->enumClass()) : $this->dataType()];
+
+        if (!empty($this->cast()) && class_exists($this->cast())) {
+            $types = [$this->cast()];
+        } else $types = [$this->isEnum() ? basename($this->enumClass()) : $this->dataType()];
         if ($this->is_nullable) $types[] = 'null';
         return (new PropertyTag($this->column_name))
             ->setTypes($types)

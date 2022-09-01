@@ -193,7 +193,7 @@ trait HasLaravelProperties
     {
         $casts = [];
         foreach ($this->columns as $column) {
-            $cast = ValueCast::getCast($column);
+            $cast = $column->cast();
             if (empty($cast)) continue;
             if (str_equal('array', $cast)) $cast = AsArrayObject::class;
             if (class_exists($cast)) $this->class->addUse($cast);

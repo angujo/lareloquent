@@ -12,6 +12,7 @@ use function Angujo\Lareloquent\str_equal;
 class ValueCast
 {
     private DBColumn $column;
+    private ?string  $cast = null;
 
     /*protected static array $lar_casts = ['array', AsStringable::class, 'boolean', 'collection', 'date', 'datetime',
                                          'immutable_date', 'immutable_datetime', 'double', 'encrypted',
@@ -37,12 +38,14 @@ class ValueCast
         ];
     }
 
-    private function _getCast()
+    public function _getCast()
+    : ?string
     {
+        if (!empty($this->cast)) return $this->cast;
         $casts = array_merge($this->defaultCasts(), LarEloquent::config()->type_casts);
         foreach ($casts as $type => $cast) {
             if ($this->validType($type) || $this->validColumnName($type)) {
-                return $cast;
+                return $this->cast = $cast;
             }
         }
         return null;
