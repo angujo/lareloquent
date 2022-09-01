@@ -6,16 +6,18 @@ use Angujo\Lareloquent\LarEloquent;
 use Angujo\Lareloquent\Path;
 use Laminas\Code\Generator\ClassGenerator;
 use Laminas\Code\Generator\FileGenerator;
+use Laminas\Code\Generator\TraitGenerator;
 use function Angujo\Lareloquent\model_file;
 
 abstract class FileCreator
 {
-    protected string         $name;
-    protected string         $parent_class;
-    protected string         $namespace;
-    protected string         $dir;
-    protected ClassGenerator $class;
-    protected bool           $overwrites = true;
+    protected string $name;
+    protected string $parent_class;
+    protected string $namespace;
+    protected string $dir;
+    /** @var ClassGenerator|TraitGenerator */
+    protected TraitGenerator|ClassGenerator $class;
+    protected bool                          $overwrites = true;
 
     public function __construct($overwrites = true)
     {

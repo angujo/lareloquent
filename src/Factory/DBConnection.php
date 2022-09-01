@@ -15,9 +15,9 @@ use ParagonIE\EasyDB\Factory;
 class DBConnection
 {
     public string  $name     = 'default';
+    public string $dbname   = 'sakila';
     private string $dbms     = 'mysql';
     private string $host     = 'localhost';
-    private string $dbname   = 'sakila';
     private string $username = 'root';
     private string $password = 'root';
 
@@ -67,7 +67,7 @@ class DBConnection
             }
         }
         return str_replace(array_keys($this->replacements), array_values($this->replacements),
-                           file_get_contents(Path::Combine(BASE_DIR, 'scripts', 'mysql', "{$file_name}.sql")));
+                           file_get_contents(Path::Combine(BASE_DIR, 'scripts', $this->dbms, "{$file_name}.sql")));
     }
 
     public function countTables()

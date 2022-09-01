@@ -9,6 +9,7 @@ use Angujo\Lareloquent\Factory\Observer;
 use Angujo\Lareloquent\Factory\ProviderBoot;
 use Angujo\Lareloquent\Factory\Request;
 use Angujo\Lareloquent\Factory\Resource;
+use Angujo\Lareloquent\Factory\TraitModel;
 use Angujo\Lareloquent\Factory\WorkModel;
 use Angujo\Lareloquent\Factory\WorkResource;
 
@@ -39,7 +40,8 @@ class LarEloquent
     {
         foreach ($this->connection->Tables() as $table) {
             if ($pre && is_callable($pre)) $pre($table);
-            $model = Model::Write($this->connection, $table);
+            /** @var TraitModel|Model $model */
+            $model = self::config()->model_trait && in_array($table->name, self::config()->trait_model_tables) ? TraitModel::Write($this->connection, $table) : Model::Write($this->connection, $table);
             WorkModel::Write($table);
             if (LarEloquent::config()->observers) Observer::Write($table);
             if (LarEloquent::config()->requests) Request::Write($table, $model->columns);

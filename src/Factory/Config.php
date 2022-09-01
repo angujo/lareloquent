@@ -11,18 +11,13 @@ use function Angujo\Lareloquent\str_equal;
  * @property Framework   $framework
  * @property string|null $model_class
  * @property string      $base_dir
- * @property string      $base_namespace
  * @property string      $namespace
- * @property bool        $composite_keys
  * @property string      $eloquent_extension_dir
  * @property bool        $base_abstract
  * @property string      $base_abstract_prefix
  * @property bool        $define_connection
  * @property bool        $add_table_schema
  * @property string      $date_format
- * @property bool        $validation_rules
- * @property string      $validation_method
- * @property bool        $validate_on_save
  * @property bool        $observers
  * @property string      $observers_dir
  * @property string      $observer_namespace
@@ -53,14 +48,9 @@ use function Angujo\Lareloquent\str_equal;
  * @property bool        $process_pivot_tables
  * @property string[]    $trait_model_tables
  * @property string[]    $custom_extends
- * @property string[]    $relation_naming
- * @property string      $column_relation_pattern
- * @property string      $column_auto_relate
- * @property string      $pivot_name_regex
  * @property string[]    $type_casts
  * @property bool        $overwrite_models
- * @property bool        $full_namespace_import
- * @property string      $hidden_columns
+ * @property string[]      $hidden_columns
  */
 class Config
 {

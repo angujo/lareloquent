@@ -2,6 +2,7 @@
 
 use Angujo\Lareloquent\Enums\Framework;
 use Angujo\Lareloquent\Path;
+use Illuminate\Database\Eloquent\Model;
 
 return
     [
@@ -10,7 +11,7 @@ return
          * Class to be used for each and every generated model
          * Ensure it is or extends \Illuminate\Database\Eloquent\Model::class
          */
-        'model_class'             => \Eloquent::class,
+        'model_class'             => Model::class,
         /*
          * Directory path to put the models
          */
@@ -18,18 +19,7 @@ return
         /*
          * Namespace for the models
          */
-        'base_namespace'          => 'App',
-        /*
-         * Namespace for the models
-         */
         'namespace'               => 'App\Models',
-        /*
-         * Enable composite keys in laravel
-         * Currently on testing
-         * Allows usage of Model::find($arr=[]) and multiple pri keys
-         * If you find yourself using this, reconsider your DB structure
-         */
-        'composite_keys'          => true,
         /*
          * Name of directory to be used to hold custom classes used by library.
          * E.g. models will be appended static class morphName() to allow access of relation name used.
@@ -53,28 +43,14 @@ return
         'define_connection'       => true,
         /*
          * Add the schema name to the table property
-         * Applicable for postgreSQl with multiple schemas other than public.
+         * Applicable for postgresSQl with multiple schemas other than public.
          * Results to e.g. [schema_name].[table_name]
          */
         'add_table_schema'        => false,
         /*
          * Set the date format for DB, serialization in array or json
          */
-        'date_format'             => 'yyyy-mm-dd HH:i:s',
-        /*
-         * Add a validation rule to every column and avail as $rules for each model
-         */
-        'validation_rules'        => true,
-        /*
-         * Function/Method name for calling the validation rules
-         * E.g. if 'validate' then we can later call $user->validate();
-         */
-        'validation_method'       => 'validate',
-        /*
-         * Try and auto validate before user calls save or update methods.
-         * If set to FALSE, you can use or call the [validation_method] above e.g. $user->validate(); before calling save
-         */
-        'validate_on_save'        => true,
+        'date_format'             => 'Y-M-d HH:i:s',
         /*
          * Set if you want resources to be set up.
          */
@@ -213,7 +189,7 @@ return
          */
         'process_pivot_tables'    => false,
         /*
-         * In Laravel 7+ a User table comes with setup and extends Authenticatable
+         * In Laravel 7+ a User table comes with setup and extends Authenticate
          * This voids IDE intellisense on properties and relations
          * Setting User as Trait is way of trying to circumvent this.
          *
@@ -227,55 +203,13 @@ return
          * Assist in getting the name of the tables to be set as traits
          * All Column constants are not attainable with this
          */
-        'trait_model_tables'      => ['users'],
+        'trait_model_tables'      => ['users','staff'],
         /*
-         * Instead of extending the [ElolaraModel] the highlighted table base classes will extend respective class
+         * Instead of extending the [CoreModel] the highlighted table base classes will extend respective class
          * Useful for classes such as [User] model where Illuminate\Foundation\Auth\User need to be extended instead of
          * Illuminate\Database\Eloquent\Model
          */
         'custom_extends'          => [],
-        /*
-         * While naming relations you need to select the order in which the names will be picked.
-         * Ordering should start with most preferred.
-         * Can only contain any of three entries; [column],[table],[constraint]
-         * [column]
-         * The column name will be used to identify the relation name
-         * @see column_relation_pattern, relation_remove_prx and relation_remove_sfx
-         * [table]
-         * The target table name will be used.
-         * [constraint]
-         * The foreign key constrain name will be used.
-         *
-         * The checking and order preference is based on usage.
-         * E.g. for column [manager_user_id] referencing table [users] with constraint [managers_user_id_foreign],
-         * will be processed by checking if relation [manager_user] has been created by another relation,
-         * if used will check if [user] has been created,
-         * if used will check if [managers_user_id_foreign] has been used.
-         * If all options used, will skip the relation
-         */
-        'relation_naming'         => ['column', 'table', 'constraint'],
-        /*
-         * Column naming pattern to auto identify relations for Foreign Keys
-         * This will check column names and set relation name based off them.
-         * Percentage similarity will be set to 70%
-         * Set to empty or null so as not to use.
-         * E.g 1: if = [{relation_name}_id] or = [fk_{relation_name}] or = [fk_{relation_name}_id] when column name is user_manager_id then relation name will be userManager
-         * i.e. use {relation_name} to indicate which part of column to be used as relation name.
-         */
-        'column_relation_pattern' => '{relation_name}_id',
-        /*
-         * Enable creation of relations based on column name.
-         * This allows the using only [column_relation_pattern] on the column name to create a relation.
-         * To work, the {relation_name} should referenced a table name in singular/plural format.
-         * Foreign keys will not be used for further checks
-         */
-        'column_auto_relate'      => true,
-        /*
-         * If you wish to rename pivot tables in belongsToMany relation,
-         * Set regex for naming pattern below. The name should be in teh table's comment
-         * E.g if set as '{pivot:(\w+)}', a table with comment "This is a table comment for {pivot:role_users}" will rename pivot to role_users instead of default pivot
-         */
-        'pivot_name_regex'        => '{pivot:(\w+)}',
         /*
          * @see https://laravel.com/docs/eloquent-mutators#attribute-casting
          * Type Casting for properties and database values.
@@ -293,13 +227,9 @@ return
          */
         'overwrite_models'        => false,
         /*
-         * Fully import classes even on same namespace (FQDN)
-         */
-        'full_namespace_import'   => false,
-        /*
          * Indicate which columns to hide by default on specific tables
          * Set the table name as key and columns as array values
          * E.g. 'users'=>['password', 'remember_token',]
          */
-        'hidden_columns'          => ['users' => ['password', 'remember_token',]],
+        'hidden_columns'          => ['users' => ['password', 'remember_token',],'staff'=>['password']],
     ];
