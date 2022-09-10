@@ -39,11 +39,21 @@ class Morpher
         return array_key_exists($tbl_name, $this->morphs);
     }
 
+    /**
+     * @param string $tbl_name
+     *
+     * @return Polymorphic[]|array
+     */
     protected function getMorphers(string $tbl_name)
     {
         return $this->morphs[$tbl_name] ?? [];
     }
 
+    /**
+     * @param string $tbl_name
+     *
+     * @return array|Polymorphic[]
+     */
     protected function getMorphs(string $tbl_name)
     {
         return flatten_array(array_map(function($m) use ($tbl_name){
@@ -61,7 +71,7 @@ class Morpher
      * @param DBConnection $connection
      * @param string       $table_name
      *
-     * @return Polymorphic|array|mixed
+     * @return Polymorphic[]|array
      */
     public static function morphers(DBConnection $connection, string $table_name)
     {

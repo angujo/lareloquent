@@ -5,6 +5,9 @@ namespace Angujo\Lareloquent\Models;
 use Angujo\Lareloquent\LarEloquent;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Laminas\Code\Generator\DocBlock\Tag\PropertyTag;
+use function Angujo\Lareloquent\in_plural;
+use function Angujo\Lareloquent\method_name;
 use function Angujo\Lareloquent\model_name;
 use function Angujo\Lareloquent\str_equal;
 
@@ -35,7 +38,7 @@ class Polymorphic
 
     public function referencedTables()
     {
-        return (!empty($this->tables)) ? $this->tables : ($this->tables = array_map('trim', explode(',', $this->column_comment)));
+        return (!empty($this->tables)) ? $this->tables : ($this->tables = array_filter(array_map('trim', explode(',', $this->column_comment))));
     }
 
     public function isReferenced(string $table_name)
@@ -56,5 +59,17 @@ class Polymorphic
     public function getMorphManyClass()
     {
         return MorphMany::class;
+    }
+
+    public function getToDocProperty()
+    {
+        return (new PropertyTag($this->actionName()))
+            ->setTypes(array_map(function($tbl){ return model_name($tbl); }, $this->referencedTables()));
+    }
+
+    public function getManyDocProperty()
+    {
+        return (new PropertyTag(method_name(in_plural($this->table_name))))
+            ->setTypes(model_name($this->table_name).'[]');
     }
 }

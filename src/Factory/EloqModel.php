@@ -45,6 +45,7 @@ abstract class EloqModel extends FileCreator
             ->table_name()
             ->connection()
             ->hidden()
+            ->guarded()
             ->timestamps()
             ->primary_key()
             ->date_format()

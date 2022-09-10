@@ -52,6 +52,7 @@ use function Angujo\Lareloquent\str_equal;
  * @property bool        $overwrite_models
  * @property string[]    $hidden_columns
  * @property string[]    $local_scopes
+ * @property string[]    $guarded_columns
  */
 class Config
 {

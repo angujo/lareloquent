@@ -105,13 +105,25 @@ trait HasLaravelProperties
     private function hidden()
     : static
     {
-        if (array_key_exists($this->table->name, LarEloquent::config()->hidden_columns)) {
-            $this->class->addPropertyFromGenerator(
-                (new PropertyGenerator('hidden',
-                                       array_values(array_intersect(array_map(fn(DBColumn $column) => $column->column_name, $this->columns), LarEloquent::config()->hidden_columns[$this->table->name]))))
-                    ->setDocBlock((new DocBlockGenerator('The attributes that should be hidden for arrays.'))
-                                      ->setTag((new VarTag('hidden', 'array')))));
-        }
+        if (!array_key_exists($this->table->name, LarEloquent::config()->hidden_columns)) return $this;
+        $this->class->addPropertyFromGenerator(
+            (new PropertyGenerator('hidden',
+                                   array_values(array_intersect(array_map(fn(DBColumn $column) => $column->column_name, $this->columns), LarEloquent::config()->hidden_columns[$this->table->name]))))
+                ->setDocBlock((new DocBlockGenerator('The attributes that should be hidden for arrays.'))
+                                  ->setTag((new VarTag('hidden', 'array'))))
+                ->setFlags([AbstractMemberGenerator::FLAG_PROTECTED]));
+        return $this;
+    }
+
+    private function guarded()
+    : static
+    {
+        $this->class->addPropertyFromGenerator(
+            (new PropertyGenerator('guarded',
+                                   array_values(array_intersect(array_map(fn(DBColumn $column) => $column->column_name, $this->columns), LarEloquent::config()->guarded_columns[$this->table->name] ?? []))))
+                ->setDocBlock((new DocBlockGenerator('The attributes that aren\'t mass assignable.'))
+                                  ->setTag((new VarTag(types: 'array'))))
+                ->setFlags([AbstractMemberGenerator::FLAG_PROTECTED]));
         return $this;
     }
 

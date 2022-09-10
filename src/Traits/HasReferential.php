@@ -6,7 +6,6 @@ use Angujo\Lareloquent\Factory\Morpher;
 use Angujo\Lareloquent\Factory\ProviderBoot;
 use Angujo\Lareloquent\LarEloquent;
 use Angujo\Lareloquent\Models\DBReferential;
-use Angujo\Lareloquent\Models\DocProperty;
 use Angujo\Lareloquent\Models\GeneralTag;
 use Angujo\Lareloquent\Models\Polymorphic;
 use Laminas\Code\Generator\DocBlockGenerator;
@@ -46,11 +45,12 @@ trait HasReferential
     public function one2One()
     : static
     {
-        foreach ($this->connection->One2One($this->table->name) as $referential) {
+        /** @var DBReferential $referential */
+        foreach ($this->connection->one2One($this->table->name) as $referential) {
             if (!LarEloquent::validTable($referential->referenced_table_name)) continue;
             $this->class->addMethodFromGenerator($this->one2OneMethod($referential))
                         ->addUse(LarEloquent::config()->namespace.'\\'.model_name($referential->referenced_table_name))
-                        ->getDocBlock()->setTag(DocProperty::referentialTag($referential));
+                        ->getDocBlock()->setTag($referential->getTagDocProperty());
         }
         return $this;
     }
@@ -67,11 +67,12 @@ trait HasReferential
     public function belongsTo()
     : static
     {
+        /** @var DBReferential $referential */
         foreach ($this->connection->BelongsTo($this->table->name) as $referential) {
             if (!LarEloquent::validTable($referential->referenced_table_name)) continue;
             $this->class->addMethodFromGenerator($this->belongsToMethod($referential))
                         ->addUse(LarEloquent::config()->namespace.'\\'.model_name($referential->referenced_table_name))
-                        ->getDocBlock()->setTag(DocProperty::referentialTag($referential));
+                        ->getDocBlock()->setTag($referential->getTagDocProperty());
             if (!$this->class->hasUse($referential->getReturnClass())) $this->class->addUse($referential->getReturnClass());
         }
         return $this;
@@ -89,11 +90,12 @@ trait HasReferential
     public function belongsToMany()
     : static
     {
+        /** @var DBReferential $referential */
         foreach ($this->connection->belongsToMany($this->table->name) as $referential) {
             if (!LarEloquent::validTable($referential->referenced_table_name)) continue;
             $this->class->addMethodFromGenerator($this->belongsToManyMethod($referential))
                         ->addUse(LarEloquent::config()->namespace.'\\'.model_name($referential->referenced_table_name))
-                        ->getDocBlock()->setTag(DocProperty::referentialTag($referential));
+                        ->getDocBlock()->setTag($referential->getTagDocProperty());
             if (!$this->class->hasUse($referential->getReturnClass())) $this->class->addUse($referential->getReturnClass());
         }
         return $this;
@@ -111,11 +113,12 @@ trait HasReferential
     public function one2Many()
     : static
     {
+        /** @var DBReferential $referential */
         foreach ($this->connection->One2Many($this->table->name) as $referential) {
             if (!LarEloquent::validTable($referential->referenced_table_name)) continue;
             $this->class->addMethodFromGenerator($this->oneToManyMethod($referential))
                         ->addUse(LarEloquent::config()->namespace.'\\'.model_name($referential->referenced_table_name))
-                        ->getDocBlock()->setTag(DocProperty::referentialTag($referential));
+                        ->getDocBlock()->setTag($referential->getTagDocProperty());
             if (!$this->class->hasUse($referential->getReturnClass())) $this->class->addUse($referential->getReturnClass());
         }
         return $this;
@@ -133,11 +136,12 @@ trait HasReferential
     public function oneThrough()
     : static
     {
+        /** @var DBReferential $referential */
         foreach ($this->connection->oneThrough($this->table->name) as $referential) {
             if (!LarEloquent::validTable($referential->referenced_table_name)) continue;
             $this->class->addMethodFromGenerator($this->oneThroughMethod($referential))
                         ->addUse(LarEloquent::config()->namespace.'\\'.model_name($referential->referenced_table_name))
-                        ->getDocBlock()->setTag(DocProperty::referentialTag($referential));
+                        ->getDocBlock()->setTag($referential->getTagDocProperty());
             if (!$this->class->hasUse($referential->getReturnClass())) $this->class->addUse($referential->getReturnClass());
         }
         return $this;
@@ -155,11 +159,12 @@ trait HasReferential
     public function manyThrough()
     : static
     {
+        /** @var DBReferential $referential */
         foreach ($this->connection->manyThrough($this->table->name) as $referential) {
             if (!LarEloquent::validTable($referential->referenced_table_name)) continue;
             $this->class->addMethodFromGenerator($this->manyThroughMethod($referential))
                         ->addUse(LarEloquent::config()->namespace.'\\'.model_name($referential->referenced_table_name))
-                        ->getDocBlock()->setTag(DocProperty::referentialTag($referential));
+                        ->getDocBlock()->setTag($referential->getTagDocProperty());
             if (!$this->class->hasUse($referential->getReturnClass())) $this->class->addUse($referential->getReturnClass());
         }
         return $this;
@@ -186,7 +191,7 @@ trait HasReferential
             }
             $this->class->addMethodFromGenerator($this->morphToMethod($polymorphic))
                         ->addUse($polymorphic->getMorphToClass())
-                        ->getDocBlock()->setTag(DocProperty::polymorphicRefTag($polymorphic));
+                        ->getDocBlock()->setTag($polymorphic->getToDocProperty());
         }
         return $this;
     }
@@ -209,7 +214,7 @@ trait HasReferential
             $this->class->addMethodFromGenerator($this->morphManyMethod($polymorphic))
                         ->addUse($polymorphic->getMorphManyClass())
                         ->addUse(LarEloquent::config()->namespace.'\\'.model_name($polymorphic->table_name))
-                        ->getDocBlock()->setTag(DocProperty::polymorphicManyTag($polymorphic));
+                        ->getDocBlock()->setTag($polymorphic->getManyDocProperty());
         }
         return $this;
     }

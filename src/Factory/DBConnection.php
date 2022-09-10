@@ -119,7 +119,12 @@ class DBConnection
         }
     }
 
-    public function One2One(string $tbl_name)
+    /**
+     * @param string $tbl_name
+     *
+     * @return \Generator|Referential[]
+     */
+    public function one2One(string $tbl_name)
     : \Generator
     {
         return $this->Referential($tbl_name, __FUNCTION__, Referential::ONE2ONE);
@@ -166,7 +171,6 @@ class DBConnection
                 if (!property_exists($ref, strtolower($array_key))) continue;
                 $ref->{strtolower($array_key)} = $row[$array_key];
             }
-            LarEloquent::addUsage($tbl_name, ...$ref->GetUses());
             yield $ref;
         }
     }

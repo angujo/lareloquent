@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
+use Laminas\Code\Generator\DocBlock\Tag\PropertyTag;
 use function Angujo\Lareloquent\col_name_reference;
 use function Angujo\Lareloquent\in_plural;
 use function Angujo\Lareloquent\in_singular;
@@ -102,5 +103,12 @@ class DBReferential
     public function setUses()
     {
         $this->addUse($this->getReturnClass());
+    }
+
+    public function getTagDocProperty()
+    : PropertyTag
+    {
+        return (new PropertyTag($this->functionName()))
+            ->setTypes($this->getDataTypeClass());
     }
 }

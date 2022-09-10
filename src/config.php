@@ -238,4 +238,10 @@ return
          * E.g. 'users'=>['password', 'remember_token',]
          */
         'hidden_columns'         => ['users' => ['password', 'remember_token',], 'staff' => ['password']],
+        /*
+         * Indicate which columns to hide by default on specific tables
+         * Set the table name as key and columns as array values
+         * E.g. 'users'=>['password', 'remember_token',]
+         */
+        'guarded_columns'        => ['users' => ['password', 'remember_token',],],
     ];
