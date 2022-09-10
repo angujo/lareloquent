@@ -7,14 +7,11 @@ use function Angujo\Lareloquent\flatten_array;
 
 class Morpher
 {
-    private static $mes = [];
+    private static array $mes = [];
 
     private DBConnection $connection;
-    private              $ran = false;
     /** @var array|Polymorphic[] */
     private $morphs = [];
-
-    // private $morph_tables = [];
 
     protected function __construct(DBConnection $connection)
     {
@@ -30,7 +27,6 @@ class Morpher
                 $this->morph_tables[$polymorphic->table_name] = [];
             }
             $this->morphs[$polymorphic->table_name][] = $polymorphic;
-            // $this->morph_tables[$polymorphic->table_name] = array_unique([...$this->morph_tables[$polymorphic->table_name], ...$polymorphic->referencedTables()]);
         }
     }
 

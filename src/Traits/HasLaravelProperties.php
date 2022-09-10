@@ -93,19 +93,18 @@ trait HasLaravelProperties
     private function timestamps()
     : static
     {
-        if (!isset($this->createdCol, $this->updatedCol)) {
-            $this->class->addPropertyFromGenerator(
-                (new PropertyGenerator('timestamps', false))
-                    ->setDocBlock((new DocBlockGenerator('Indicates if the model should be timestamped.'))
-                                      ->setTag((new VarTag('timestamps', 'bool')))));
-        }
+        if (is_a($this, TraitModel::class) || isset($this->createdCol, $this->updatedCol)) return $this;
+        $this->class->addPropertyFromGenerator(
+            (new PropertyGenerator('timestamps', false))
+                ->setDocBlock((new DocBlockGenerator('Indicates if the model should be timestamped.'))
+                                  ->setTag((new VarTag('timestamps', 'bool')))));
         return $this;
     }
 
     private function hidden()
     : static
     {
-        if (!array_key_exists($this->table->name, LarEloquent::config()->hidden_columns)) return $this;
+        if (is_a($this, TraitModel::class) || !array_key_exists($this->table->name, LarEloquent::config()->hidden_columns)) return $this;
         $this->class->addPropertyFromGenerator(
             (new PropertyGenerator('hidden',
                                    array_values(array_intersect(array_map(fn(DBColumn $column) => $column->column_name, $this->columns), LarEloquent::config()->hidden_columns[$this->table->name]))))
@@ -118,6 +117,7 @@ trait HasLaravelProperties
     private function guarded()
     : static
     {
+        if (is_a($this, TraitModel::class)) return $this;
         $this->class->addPropertyFromGenerator(
             (new PropertyGenerator('guarded',
                                    array_values(array_intersect(array_map(fn(DBColumn $column) => $column->column_name, $this->columns), LarEloquent::config()->guarded_columns[$this->table->name] ?? []))))
@@ -130,6 +130,7 @@ trait HasLaravelProperties
     private function table_name()
     : static
     {
+        if (is_a($this, TraitModel::class)) return $this;
         $this->class->addPropertyFromGenerator(
             (new PropertyGenerator('table', (LarEloquent::config()->add_table_schema ? $this->connection->dbname.'.' : '').$this->table->name))
                 ->setDocBlock((new DocBlockGenerator('Table associated with model.'))
@@ -141,7 +142,7 @@ trait HasLaravelProperties
     private function primary_key()
     : static
     {
-        if (!isset($this->primaryCol)) return $this;
+        if (is_a($this, TraitModel::class) || !isset($this->primaryCol)) return $this;
         $this->class->addPropertyFromGenerator(
             (new PropertyGenerator('primaryKey', $this->primaryCol->column_name))
                 ->setDocBlock((new DocBlockGenerator('Primary Key associated with model.'))
@@ -167,7 +168,7 @@ trait HasLaravelProperties
     private function date_format()
     : static
     {
-        if (!LarEloquent::config()->date_format) return $this;
+        if (is_a($this, TraitModel::class) || !LarEloquent::config()->date_format) return $this;
         $this->class->addPropertyFromGenerator(
             (new PropertyGenerator('dateFormat', LarEloquent::config()->date_format))
                 ->setDocBlock((new DocBlockGenerator('The storage format of the model\'s date columns.'))
@@ -179,7 +180,7 @@ trait HasLaravelProperties
     private function connection()
     : static
     {
-        if (!LarEloquent::config()->define_connection) return $this;
+        if (is_a($this, TraitModel::class) || !LarEloquent::config()->define_connection) return $this;
         $this->class->addPropertyFromGenerator(
             (new PropertyGenerator('connection', $this->connection->name))
                 ->setDocBlock((new DocBlockGenerator('The database connection that should be used by the model.'))
@@ -191,7 +192,7 @@ trait HasLaravelProperties
     private function attributes()
     : static
     {
-        if (0 >= (count($defaults = array_filter($this->columns, function(DBColumn $col){ return null !== $col->column_default && null != $col->defaultValue(); })))) return $this;
+        if (is_a($this, TraitModel::class) || 0 >= (count($defaults = array_filter($this->columns, function(DBColumn $col){ return null !== $col->column_default && null != $col->defaultValue(); })))) return $this;
         $this->class->addPropertyFromGenerator(
             (new PropertyGenerator('attributes', array_combine(array_map(fn(DBColumn $col) => $col->column_name, $defaults), array_map(fn(DBColumn $col) => $col->defaultValue(), $defaults))))
                 ->setDocBlock((new DocBlockGenerator('The model\'s default values for attributes.'))
@@ -203,6 +204,7 @@ trait HasLaravelProperties
     private function typeCasts()
     : static
     {
+        if (is_a($this, TraitModel::class)) return $this;
         $casts = [];
         foreach ($this->columns as $column) {
             $cast = $column->cast();
