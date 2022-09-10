@@ -43,7 +43,7 @@ class DBConnection
         $this->replacements = ['{db}'       => $this->dbname,
                                '{andwhere}' => '',
                                '{tbl}'      => '',
-                               '{pivots}'   => implode(', ', array_map(function($tbl){ return "'{$tbl}'"; }, LarEloquent::config()->pivot_tables))];
+                               '{pivots}'   => implode(', ', array_map(function($tbl){ return "'{$tbl}'"; }, LarEloquent::config()->pivot_tables??['[*UNKNOWN_TABLE_NAME*]']))];
         $this->excludes     = (!LarEloquent::config()->process_pivot_tables && isset(LarEloquent::config()->pivot_tables)) ? LarEloquent::config()->pivot_tables : [];
         if (isset(LarEloquent::config()->only_tables)) {
             $this->only = array_diff(LarEloquent::config()->only_tables, $this->excludes);
