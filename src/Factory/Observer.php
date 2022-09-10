@@ -19,7 +19,6 @@ class Observer extends FileCreator
     private         $events = ['retrieved', 'creating', 'created', 'updating', 'updated', 'saving', 'saved', 'deleting', 'deleted',
                                'trashed', 'forceDeleted', 'restoring', 'restored', 'replicating',];
     private DBTable $table;
-    private string  $table_name;
     private string  $table_namespace;
 
     public function __construct(DBTable $table)

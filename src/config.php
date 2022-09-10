@@ -56,7 +56,7 @@ return
          * This will add abstract scope methods to be implemented as well as set method doc for easy coding.
          * E.g. ['users'=>['active','expired'],'products'=>'sold',...]
          */
-        'local_scopes'           => ['actor'=>['popular','dead']],
+        'local_scopes'           => ['actor' => ['popular', 'dead']],
         /*
          * Set if you want resources to be set up.
          */
@@ -215,7 +215,7 @@ return
          * Useful for classes such as [User] model where Illuminate\Foundation\Auth\User need to be extended instead of
          * Illuminate\Database\Eloquent\Model
          */
-        'custom_extends'         => [],
+        'custom_extends'         => ['users' => \Illuminate\Foundation\Auth\User::class],
         /*
          * @see https://laravel.com/docs/eloquent-mutators#attribute-casting
          * Type Casting for properties and database values.

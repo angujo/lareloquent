@@ -27,7 +27,6 @@ class Request extends FileCreator
     private DBTable $table;
     /** @var array|DBColumn[] */
     private array  $columns;
-    private string $table_name;
     private string $table_namespace;
 
     private array $rules    = [];

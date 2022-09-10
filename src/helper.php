@@ -99,16 +99,16 @@ namespace Angujo\Lareloquent {
     }
 
     if (!function_exists('in_singular')) {
-        function in_singular(string $word, float $count = 1)
+        function in_singular(string $word)
         : string
         {
             $infl = new Inflector();
-            return $infl->isSingular($word) || $count <= 1 ? $word : $infl->singular($word);
+            return $infl->isSingular($word) ? $word : $infl->singular($word);
         }
     }
 
     if (!function_exists('model_file')) {
-        function in_plural(string $word, float $count = 9)
+        function in_plural(string $word, float $count = 99)
         : string
         {
             $infl = new Inflector();

@@ -24,7 +24,7 @@ class WorkResource extends FileCreator
     public function __construct(DBTable $table)
     {
         $this->table        = $table;
-        $this->name         = model_name($this->table->name.'_'.LarEloquent::config()->resource_suffix);
+        $this->name         = model_name(($this->table_name=$this->table->name).'_'.LarEloquent::config()->resource_suffix);
         $this->parent_class = implode('\\', [LarEloquent::config()->resource_namespace, model_name(LarEloquent::config()->base_resource_prefix), model_name(LarEloquent::config()->base_resource_prefix.'_'.$this->table->name.'_'.LarEloquent::config()->resource_suffix)]);
         $this->dir          = LarEloquent::config()->resources_dir;
         $this->namespace    = LarEloquent::config()->resource_namespace;

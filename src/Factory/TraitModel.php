@@ -13,7 +13,6 @@ class TraitModel extends EloqModel
         parent::__construct($table, $connection);
         $this->class = new TraitGenerator($this->name);
         if (!empty($this->namespace)) $this->class->setNamespaceName($this->namespace);
-        if (!empty($this->parent_class)) $this->class->setExtendedClass($this->parent_class)->addUse($this->parent_class);
         $this->class->setAbstract(true)
                     ->setDocBlock((new DocBlockGenerator('The Table mapping for model.'))
                                       ->setLongDescription('This is the base model for direct mapping of the DB table.'));

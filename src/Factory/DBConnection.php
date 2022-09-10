@@ -15,7 +15,7 @@ use ParagonIE\EasyDB\Factory;
 class DBConnection
 {
     public string  $name     = 'default';
-    public string $dbname   = 'sakila';
+    public string $dbname   = 'mneapi';
     private string $dbms     = 'mysql';
     private string $host     = 'localhost';
     private string $username = 'root';

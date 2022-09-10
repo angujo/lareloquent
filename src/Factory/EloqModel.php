@@ -28,6 +28,7 @@ abstract class EloqModel extends FileCreator
     public function __construct(DBTable $table, DBConnection $connection)
     {
         $this->table        = $table;
+        $this->table_name   = $table->name;
         $this->name         = model_name(LarEloquent::config()->base_abstract_prefix.'_'.$this->table->name);
         $this->connection   = $connection;
         $this->parent_class = array_key_exists($this->table->name, LarEloquent::config()->custom_extends) && !empty(LarEloquent::config()->custom_extends[$table->name]) && is_string(LarEloquent::config()->custom_extends[$table->name]) ? LarEloquent::config()->custom_extends[$table->name] : LarEloquent::config()->model_class;
