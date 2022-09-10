@@ -22,8 +22,8 @@ class WorkModel extends FileCreator
         $this->parent_class = implode('\\', [LarEloquent::config()->namespace, model_name(LarEloquent::config()->base_abstract_prefix), model_name(LarEloquent::config()->base_abstract_prefix.'_'.$table->name)]);
         $trait_class        = null;
         if ($trait) {
-            $trait_class        = $this->parent_class;
-            $this->parent_class = LarEloquent::config()->custom_extends[$table->name];
+            $trait_class = $this->parent_class;
+            if (array_key_exists($this->table_name, LarEloquent::config()->custom_extends)) $this->parent_class = LarEloquent::config()->custom_extends[$table->name];
         }
 
 
