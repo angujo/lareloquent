@@ -53,7 +53,7 @@ class DBReferential
             case Referential::ONETHROUGH:
                 return implode('_', [in_singular($this->fromColumnName(true)), in_singular($this->referenced_table_name)]);
             case Referential::MANYTHROUGH:
-                return implode('_', [in_singular(str_equal(col_name_reference($this->through_column_name), $this->table_name) ? $this->fromColumnName(true) : col_name_reference($this->through_column_name)), in_plural($this->referenced_table_name)]);
+                return implode('_', [in_singular(str_equal(col_name_reference($this->through_column_name), $this->table_name) ? $this->fromColumnName(true) : col_name_reference($this->referenced_column_name)), in_plural($this->referenced_table_name)]);
             case Referential::BELONGSTOMANY:
                 return in_plural(preg_replace('/_id(\s+)?$/', '', $this->through_ref_column_name));
             case Referential::BELONGSTO:
