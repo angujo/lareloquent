@@ -1,11 +1,12 @@
 <?php
 
+use Angujo\Lareloquent\Enums\Framework;
 use Angujo\Lareloquent\Path;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Foundation\Auth\User;
 
 return
     [
+        'framework'              => Framework::CUSTOM,
         /*
          * Class to be used for each and every generated model
          * Ensure it is or extends \Illuminate\Database\Eloquent\Model::class
@@ -14,11 +15,11 @@ return
         /*
          * Directory path to put the models
          */
-        'base_dir'               => app_path('Models'),
+        'base_dir'               => Path::Combine(ROOT_DIR,'Test', 'output'),
         /*
          * Namespace for the models
          */
-        'namespace'              => 'App\Models',
+        'namespace'              => 'Angujo\LareloqTest',
         /*
          * Name of directory to be used to hold custom classes used by library.
          * E.g. models will be appended static class morphName() to allow access of relation name used.
@@ -63,11 +64,11 @@ return
         /*
          * Directory path to put the models' resources
          */
-        'resources_dir'          =>  app_path("Http".DIRECTORY_SEPARATOR.'Resources'),
+        'resources_dir'          => Path::Combine(ROOT_DIR,'Test', 'output', 'Resources'),
         /*
          * Namespace for the resources
          */
-        'resource_namespace'     => 'App\Http\Resources',
+        'resource_namespace'     => 'Angujo\LareloqTest\Resources',
         /*
          * Suffix for the request's file and class name
          * E.g. for model User + [observer_suffix='Request'] = UserRequest[.php]
@@ -86,11 +87,11 @@ return
         /*
          * Directory path to put the models' requests
          */
-        'requests_dir'           => app_path('Http'.DIRECTORY_SEPARATOR.'Requests'),
+        'requests_dir'           => Path::Combine(ROOT_DIR,'Test', 'output', 'Requests'),
         /*
          * Namespace for the requests
          */
-        'request_namespace'      => 'App\Http\Requests',
+        'request_namespace'      => 'Angujo\LareloqTest\Requests',
         /*
          * Suffix for the request's file and class name
          * E.g. for model User + [observer_suffix='Request'] = UserRequest[.php]
@@ -107,11 +108,11 @@ return
          * If validation enabled with option of [validate_on_save] set to TRUE,
          * the method will be initiated inside the observer's "saving" method.
          */
-        'observers_dir'          => app_path('Models'.DIRECTORY_SEPARATOR.'Observers'),
+        'observers_dir'          => Path::Combine(ROOT_DIR,'Test', 'output', 'Observers'),
         /*
          * Namespace for the observers
          */
-        'observer_namespace'     => 'App\Models\Observers',
+        'observer_namespace'     => 'Angujo\LareloqTest\Observers',
         /*
          * Suffix for the observer's file and class name
          * E.g. for model User + [observer_suffix='Observer'] = UserObserver[.php]
@@ -126,11 +127,11 @@ return
          * Enums will be created for evey column of type enum
          * Table name and column name will be used as the enum name.
          */
-        'enums_dir'              => app_path('Models'.DIRECTORY_SEPARATOR.'Enums'),
+        'enums_dir'              => Path::Combine(ROOT_DIR,'Test', 'output', 'Enums'),
         /*
          * Namespace for the enums
          */
-        'enum_namespace'         => 'App\Models\Enums',
+        'enum_namespace'         => 'Angujo\LareloqTest\Enums',
         /*
          * Enable to add @date on each Base Model every time it is run
          * If set to False, @date will be set on first instance
@@ -214,7 +215,7 @@ return
          * Useful for classes such as [User] model where Illuminate\Foundation\Auth\User need to be extended instead of
          * Illuminate\Database\Eloquent\Model
          */
-        'custom_extends'         => ['users' => User::class],
+        'custom_extends'         => ['users' => \Illuminate\Foundation\Auth\User::class],
         /*
          * @see https://laravel.com/docs/eloquent-mutators#attribute-casting
          * Type Casting for properties and database values.

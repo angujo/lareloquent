@@ -8,7 +8,8 @@
       "src/helper.php"
     ],
     "psr-4": {
-      "Angujo\\Lareloquent\\": "src/"
+      "Angujo\\Lareloquent\\": "src/",
+      "Angujo\\LareloqTest\\": "Test/output/"
     }
   },
   "authors": [

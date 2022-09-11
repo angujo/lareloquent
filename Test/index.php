@@ -1,10 +1,13 @@
 <?php
 
+
 include '../vendor/autoload.php';
 
 use Angujo\Lareloquent\Factory\DBConnection;
 use Angujo\Lareloquent\LarEloquent;
 use Angujo\Lareloquent\Models\DBTable;
+
+defined('LARELOQ_TEST') || define('LARELOQ_TEST', true);
 
 echo "Starting off...\n";
 

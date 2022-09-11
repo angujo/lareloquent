@@ -73,7 +73,9 @@ class Config
 
     public function __construct()
     {
-        $this->configs = array_merge(include(Path::Combine(BASE_DIR, "config.php")), is_callable('config') ? config(LarEloquent::LM_APP_NAME) : []);
+        if (defined('LARELOQ_TEST')) {
+            $this->configs = include(Path::Combine(ROOT_DIR, 'Test', "config-test.php"));
+        } else $this->configs = array_merge(include(Path::Combine(BASE_DIR, "config.php")), is_callable('config') ? config(LarEloquent::LM_APP_NAME) : []);
     }
 
     public function isLaravel()

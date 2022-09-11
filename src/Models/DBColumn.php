@@ -49,7 +49,7 @@ class DBColumn
 
     public function enumClass()
     {
-        return implode('\\', [LarEloquent::config()->enum_namespace, model_name($this->table_name.'_'.$this->column_name)]);
+        return implode('\\', [LarEloquent::config()->enum_namespace, model_name($this->column_name)]);
     }
 
     public function constantName()
