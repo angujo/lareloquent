@@ -152,7 +152,7 @@ trait HasReferential
     {
         return $this->referentialMethod(
             $referential,
-            "return \$this->hasManyThrough(".model_name($referential->referenced_table_name)."::class, ".model_name($referential->through_table_name)."::class, '$referential->through_column_name', '$referential->referenced_column_name', '$referential->column_name', '$referential->through_ref_column_name');",
+            "return \$this->hasManyThrough(".model_name($referential->referenced_table_name)."::class, ".model_name($referential->through_table_name)."::class, '$referential->through_ref_column_name', '$referential->referenced_column_name', '$referential->column_name', '$referential->through_column_name');",
             "Get ".model_name(in_plural($referential->referenced_table_name))." associated with the ".model_name($referential->table_name));
     }
 
