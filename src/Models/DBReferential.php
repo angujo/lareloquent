@@ -54,20 +54,6 @@ class DBReferential
         switch ($this->ref) {
             case Referential::ONETHROUGH:
                 return implode('_', [in_singular($this->fromColumnName(true)), in_singular($this->referenced_table_name)]);
-            case Referential::MANYTHROUGH:
-                return $this->referenced_table_name;
-                $alts = [
-                    $this->referenced_table_name,
-                   $def= implode('_', [in_singular(str_equal(col_name_reference($this->through_column_name), $this->table_name) ? $this->fromColumnName(true) : col_name_reference($this->referenced_column_name)), in_plural($this->referenced_table_name)]),
-                ];
-                if (empty($this->name_check) || !is_callable($this->name_check)) return array_shift($alts);
-                $fn = $this->name_check;
-                foreach ($alts as $alt) {
-                    if (($res=$fn($alt))) {
-                        return $alt;
-                    }
-                }
-                return $def;
             case Referential::BELONGSTOMANY:
                 return in_plural(preg_replace('/_id(\s+)?$/', '', $this->through_ref_column_name));
             case Referential::BELONGSTO:
@@ -76,6 +62,7 @@ class DBReferential
                 return (!str_equal($col_n = in_singular($this->fromColumnName(true)), in_singular($this->table_name))) ? implode('_', [$col_n, in_plural($this->referenced_table_name)]) : in_plural($this->referenced_table_name);
             case Referential::ONE2ONE:
                 if (!str_equal($col_n = in_singular($this->fromColumnName(true)), in_singular($this->table_name))) return implode('_', [$col_n, in_singular($this->referenced_table_name)]);
+            case Referential::MANYTHROUGH:
             default:
                 return $this->referenced_table_name;
         }
