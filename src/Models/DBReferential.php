@@ -31,6 +31,8 @@ class DBReferential
     public string      $referenced_column_name;
 
     private Referential $ref;
+    private ?string     $func_name  = null;
+    private ?\Closure   $name_check = null;
 
     public function __construct(Referential $referential)
     {
@@ -44,7 +46,7 @@ class DBReferential
 
     public function functionName()
     {
-        return method_name($this->accessName());
+        return $this->func_name ?? ($this->func_name = method_name($this->accessName()));
     }
 
     private function accessName()
@@ -53,7 +55,19 @@ class DBReferential
             case Referential::ONETHROUGH:
                 return implode('_', [in_singular($this->fromColumnName(true)), in_singular($this->referenced_table_name)]);
             case Referential::MANYTHROUGH:
-                return implode('_', [in_singular(str_equal(col_name_reference($this->through_column_name), $this->table_name) ? $this->fromColumnName(true) : col_name_reference($this->referenced_column_name)), in_plural($this->referenced_table_name)]);
+                return $this->referenced_table_name;
+                $alts = [
+                    $this->referenced_table_name,
+                   $def= implode('_', [in_singular(str_equal(col_name_reference($this->through_column_name), $this->table_name) ? $this->fromColumnName(true) : col_name_reference($this->referenced_column_name)), in_plural($this->referenced_table_name)]),
+                ];
+                if (empty($this->name_check) || !is_callable($this->name_check)) return array_shift($alts);
+                $fn = $this->name_check;
+                foreach ($alts as $alt) {
+                    if (($res=$fn($alt))) {
+                        return $alt;
+                    }
+                }
+                return $def;
             case Referential::BELONGSTOMANY:
                 return in_plural(preg_replace('/_id(\s+)?$/', '', $this->through_ref_column_name));
             case Referential::BELONGSTO:
@@ -70,6 +84,18 @@ class DBReferential
     private function fromColumnName($ref = false)
     {
         return col_name_reference($ref ? $this->referenced_column_name : $this->column_name);
+    }
+
+    /**
+     * @param \Closure|null $name_check
+     *
+     * @return DBReferential
+     */
+    public function setNameCheck(?\Closure $name_check)
+    : DBReferential
+    {
+        $this->name_check = $name_check;
+        return $this;
     }
 
     private function fromTableName($ref = false)

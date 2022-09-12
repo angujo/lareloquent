@@ -161,7 +161,8 @@ trait HasReferential
     {
         /** @var DBReferential $referential */
         foreach ($this->connection->manyThrough($this->table->name) as $referential) {
-            if (!LarEloquent::validTable($referential->referenced_table_name)) continue;
+            $referential->setNameCheck(function($name){ return $this->class->hasMethod($name); });
+            if (!LarEloquent::validTable($referential->referenced_table_name) || $this->class->hasMethod($referential->functionName())) continue;
             $this->class->addMethodFromGenerator($this->manyThroughMethod($referential))
                         ->addUse(LarEloquent::config()->namespace.'\\'.model_name($referential->referenced_table_name))
                         ->getDocBlock()->setTag($referential->getTagDocProperty());
