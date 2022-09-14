@@ -26,10 +26,9 @@ namespace Angujo\Lareloquent {
         function model_name(string $txt)
         : string
         {
-            return in_singular(preg_replace_callback(
-                                   '/(^|[^A-Za-z\d])([a-zA-Z])([A-Z]+|[a-z\d]+)/',
-                                   function($matches){ return strtoupper($matches[2]).strtolower($matches[3]); },
-                                   $txt));
+            return preg_replace_callback('/([A-Z])([a-z\d]+)$/',
+                function($matches){ return in_singular($matches[1].$matches[2]); },
+                                         preg_replace_callback('/(^|[^A-Za-z\d])([a-zA-Z])([A-Z]+|[a-z\d]+)/', function($matches){ return strtoupper($matches[2]).strtolower($matches[3]); }, $txt));
         }
     }
 
