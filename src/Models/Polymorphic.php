@@ -21,7 +21,7 @@ class Polymorphic
     /** @var array|string[] */
     private $tables = [];
 
-    public function actionName()
+    public function toName()
     {
         $last3_xter = substr($this->morph_name, -3);
         if (str_equal('ate', $last3_xter)) return preg_replace('/ate$/', 'able', $this->morph_name);
@@ -34,6 +34,11 @@ class Polymorphic
         if (str_equal('e', $last_xter)) return preg_replace('/e$/', 'able', $this->morph_name);
         close:
         return $this->morph_name.'able';
+    }
+
+    public function manyName()
+    {
+        return method_name(in_plural($this->table_name));
     }
 
     public function referencedTables()
@@ -63,7 +68,7 @@ class Polymorphic
 
     public function getToDocProperty()
     {
-        return (new PropertyTag($this->actionName()))
+        return (new PropertyTag($this->toName()))
             ->setTypes(array_map(function($tbl){ return model_name($tbl); }, $this->referencedTables()));
     }
 

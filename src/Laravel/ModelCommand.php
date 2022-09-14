@@ -70,6 +70,7 @@ class ModelCommand extends Command
             return 0;
         } catch (\Exception $exception) {
             $this->output->error($exception->getMessage());
+            throw $exception;
             return 1;
         }
     }

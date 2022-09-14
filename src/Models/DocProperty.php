@@ -47,7 +47,7 @@ class DocProperty
 
     public static function polymorphicRefTag(Polymorphic $polymorphic)
     {
-        return (new PropertyTag($polymorphic->actionName()))
+        return (new PropertyTag($polymorphic->toName()))
             ->setTypes(array_map(function($tbl){ return model_name($tbl); }, $polymorphic->referencedTables()));
     }
 
@@ -72,7 +72,7 @@ class DocProperty
     : DocProperty
     {
         $m            = new self();
-        $m->name      = $polymorphic->actionName();
+        $m->name      = $polymorphic->toName();
         $m->dataTypes = $refs = array_map(function($tbl){ return model_name($tbl); }, $polymorphic->referencedTables());
         LarEloquent::addUsage($polymorphic->table_name, ...array_map(function($tbl) use ($polymorphic){ return LarEloquent::config()->namespace.'\\'.model_name($tbl); }, $refs));
         return $m;

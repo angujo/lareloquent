@@ -176,7 +176,7 @@ trait HasReferential
         $doc = (new DocBlockGenerator())
             ->setTag(GeneralTag::returnTag(basename($polymorphic->getMorphToClass())))
             ->setShortDescription("Get associated with the ".model_name($polymorphic->table_name));
-        return (new MethodGenerator($polymorphic->actionName()))
+        return (new MethodGenerator($polymorphic->toName()))
             ->setDocBlock($doc)
             ->setBody("return \$this->morphTo('$polymorphic->morph_name');");
     }
@@ -202,15 +202,16 @@ trait HasReferential
         $doc = (new DocBlockGenerator())
             ->setTag(GeneralTag::returnTag(basename($polymorphic->getMorphManyClass())))
             ->setShortDescription("Get ".model_name(in_plural($polymorphic->table_name))." associated with the ".model_name($this->table->name));
-        return (new MethodGenerator(method_name(in_plural($polymorphic->table_name))))
+        return (new MethodGenerator($polymorphic->manyName()))
             ->setDocBlock($doc)
-            ->setBody("return \$this->morphMany(".model_name($polymorphic->table_name)."::class, '{$polymorphic->actionName()}');");
+            ->setBody("return \$this->morphMany(".model_name($polymorphic->table_name)."::class, '{$polymorphic->toName()}');");
     }
 
     public function morphMany()
     : static
     {
         foreach (Morpher::morphs($this->connection, $this->table->name) as $polymorphic) {
+            if ($this->class->hasMethod($polymorphic->manyName())) continue;
             $this->class->addMethodFromGenerator($this->morphManyMethod($polymorphic))
                         ->addUse($polymorphic->getMorphManyClass())
                         ->addUse(LarEloquent::config()->namespace.'\\'.model_name($polymorphic->table_name))
