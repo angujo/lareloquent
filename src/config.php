@@ -97,6 +97,12 @@ return
          */
         'request_suffix'         => 'Request',
         /*
+         * Prefix for the abstract request classes
+         * This will be used to extend the namespace and add dir for the base requests
+         * Default: Base
+         */
+        'base_request_prefix'   => '',
+        /*
          * Set if you want observers to be set up.
          * If [validate_on_save] = TRUE, [observers] will be assumed to be TRUE, irrespective of value below.
          */

@@ -37,11 +37,12 @@ class Request extends FileCreator
         $this->columns         = $columns;
         $this->table           = $table;
         $this->table_namespace = implode('\\', [LarEloquent::config()->namespace, $this->table_name = model_name($this->table->name)]);
-        $this->name            = model_name($this->table_name.'_'.LarEloquent::config()->request_suffix);
-        $this->namespace       = LarEloquent::config()->request_namespace;
+        $this->name            = model_name(LarEloquent::config()->base_request_prefix.'_'.$this->table_name.'_'.LarEloquent::config()->request_suffix);
+        $this->namespace       = implode('\\', [LarEloquent::config()->request_namespace, model_name(LarEloquent::config()->base_request_prefix)]);
         $this->parent_class    = FormRequest::class;
-        $this->dir             = LarEloquent::config()->requests_dir;
+        $this->dir             = Path::Combine(LarEloquent::config()->requests_dir, model_name(LarEloquent::config()->base_request_prefix));
         parent::__construct();
+        $this->class->setAbstract(true);
     }
 
     private function classDoc()
@@ -55,11 +56,11 @@ class Request extends FileCreator
     private function authorizeMethod()
     {
         return (new MethodGenerator('authorize'))
+            ->setAbstract(true)
             ->setDocBlock((new DocBlockGenerator())
                               ->setShortDescription('Determine if the user is authorized to make this request.')
                               ->setTag(GeneralTag::returnTag('bool')))
-            ->setReturnType('bool')
-            ->setBody('return true;');
+            ->setReturnType('bool');
     }
 
     private function messagesMethod()

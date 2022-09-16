@@ -34,6 +34,7 @@ use function Angujo\Lareloquent\str_equal;
  * @property string      $requests_dir
  * @property string      $request_namespace
  * @property string      $request_suffix
+ * @property string      $base_request_prefix
  * @property bool        $date_base
  * @property bool        $db_directories
  * @property bool        $constant_column_names
@@ -87,7 +88,7 @@ class Config
     public function __get(string $name)
     {
         $key = strtolower($name);
-        if (in_array($key, ['base_abstract_prefix', 'base_resource_prefix']) && (!isset($this->configs[$key]) || empty($this->configs[$key]))) {
+        if (in_array($key, ['base_abstract_prefix', 'base_resource_prefix','base_request_prefix']) && (!isset($this->configs[$key]) || empty($this->configs[$key]))) {
             $this->configs[$key] = 'Base';
         }
         if (str_equal($key, 'eloquent_extension_dir') && (!isset($this->configs[$key]) || empty($this->configs[$key]))) {
