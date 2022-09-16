@@ -192,7 +192,7 @@ trait HasLaravelProperties
     private function attributes()
     : static
     {
-        if (is_a($this, TraitModel::class) || 0 >= (count($defaults = array_filter($this->columns, function(DBColumn $col){ return null !== $col->column_default && null != $col->defaultValue(); })))) return $this;
+        if (is_a($this, TraitModel::class) || 0 >= (count($defaults = array_filter($this->columns, function(DBColumn $col){ return null !== $col->column_default && null !== $col->defaultValue(); })))) return $this;
         $this->class->addPropertyFromGenerator(
             (new PropertyGenerator('attributes', array_combine(array_map(fn(DBColumn $col) => $col->column_name, $defaults), array_map(fn(DBColumn $col) => $col->defaultValue(), $defaults))))
                 ->setDocBlock((new DocBlockGenerator('The model\'s default values for attributes.'))

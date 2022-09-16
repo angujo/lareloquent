@@ -108,6 +108,7 @@ class Request extends FileCreator
         if (preg_match('/(^|_)mac_address(_|$)/', $column->column_name)) $rules[] = 'mac_address';
         if ($column->PhpDataType() === DataType::INT) $rules[] = 'integer';
         if ($column->PhpDataType() === DataType::FLOAT) $rules[] = 'numeric';
+        if ($column->PhpDataType() === DataType::BOOL) $rules[] = 'boolean';
         if (!empty($column->character_maximum_length) && DataType::STRING === $column->PhpDataType()) $rules[] = "max:{$column->character_maximum_length}";
         if ($column->is_unique) $rules[] = "unique:{$this->table->name},{$column->column_name}";
         if (!empty($column->referenced_column_name)) $rules[] = "exists:{$column->referenced_table_name},{$column->referenced_column_name}";
