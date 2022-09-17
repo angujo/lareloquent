@@ -8,12 +8,16 @@ use Angujo\Lareloquent\Models\DBColumn;
 use Angujo\Lareloquent\Models\DBTable;
 use Angujo\Lareloquent\Models\GeneralTag;
 use Angujo\Lareloquent\Path;
+use Illuminate\Validation\Rule;
+use Laminas\Code\Generator\AbstractMemberGenerator;
 use Laminas\Code\Generator\DocBlock\Tag\LicenseTag;
 use Laminas\Code\Generator\DocBlockGenerator;
 use Laminas\Code\Generator\MethodGenerator;
+use Laminas\Code\Generator\PropertyGenerator;
 use Laminas\Code\Generator\ValueGenerator;
 use function Angujo\Lareloquent\flatten_array;
 use function Angujo\Lareloquent\model_name;
+use function Angujo\Lareloquent\str_equal;
 
 class Request extends FileCreator
 {
@@ -22,8 +26,9 @@ class Request extends FileCreator
     private array  $columns;
     private string $table_namespace;
 
-    private array $rules    = [];
-    private array $messages = [];
+    private array     $rules         = [];
+    private array     $messages      = [];
+    private ?DBColumn $primaryColumn = null;
 
     public function __construct(DBTable $table, array $columns)
     {
@@ -46,6 +51,27 @@ class Request extends FileCreator
             ->setTag((new LicenseTag(licenseName: 'MIT')));
     }
 
+    private function isLoadedMethod()
+    : MethodGenerator
+    {
+        $class = implode('\\', [LarEloquent::config()->namespace, model_name($this->table->name)]);
+        $this->class->addPropertyFromGenerator((new PropertyGenerator('is_loaded', null, AbstractMemberGenerator::FLAG_PRIVATE)))
+                    ->addUse($class)
+                    ->addUse(Rule::class);
+        return (new MethodGenerator('isLoaded'))
+            ->setReturnType('bool')
+            ->setDocBlock((new DocBlockGenerator())
+                              ->setShortDescription('Method to check if the model is being uploaded.')
+                              ->setTag(GeneralTag::fromContent('return', 'bool')))
+            ->setBody("if (null!==\$this->is_loaded) return \$this->is_loaded;\n"
+                      ."foreach (\$this->route()->parameters as \$parameter) {\n"
+                      ."\tif (is_a(\$parameter, ".basename($class)."::class)) return \$this->is_loaded = true;\n"
+                      ."}\n"
+                      ."return \$this->is_loaded = \$this->has('".$this->primaryColumn->column_name."') && !empty(\$this->get('".$this->primaryColumn->column_name."'));")
+            ->setFlags(AbstractMemberGenerator::FLAG_PROTECTED);
+
+    }
+
     private function rulesMethod()
     {
         return (new MethodGenerator('rules'))
@@ -59,10 +85,16 @@ class Request extends FileCreator
     private function parseRules()
     {
         foreach ($this->columns as $column) {
-            $rules     = array_merge($this->getRule($column),  $column->getValidation());
+            if (empty($this->primaryColumn) && $column->is_primary) $this->primaryColumn = $column;
+            $rules = array_merge($this->getRule($column), $column->getValidation());
             if (empty($rules)) continue;
-            $this->messages                    = array_merge($this->messages, $this->getMessages(array_keys($rules), $column));
-            $this->rules[$column->column_name] = array_map(function($k, $v){ return empty($v) ? $k : "$k:$v"; }, array_keys($rules), $rules);
+            $this->messages = array_merge($this->messages, $this->getMessages(array_keys($rules), $column));
+            foreach ($rules as $rule => $val) {
+                if (str_equal('required', $rule)) {
+                    $this->rules[$column->column_name]['required'] = (new ValueGen("Rule::requiredIf(function(){ return !\$this->isLoaded(); })", ValueGen::TYPE_ASIS));
+                } else $this->rules[$column->column_name][] = empty($val) ? $rule : "$rule:$val";
+            }
+            // = array_map(function($k, $v){ return empty($v) ? $k : "$k:$v"; }, array_keys($rules), $rules);
         }
     }
 
@@ -144,6 +176,7 @@ class Request extends FileCreator
     {
         $this->parseRules();
         $this->class->setDocBlock($this->classDoc())
+                    ->addMethodFromGenerator($this->isLoadedMethod())
                     ->addMethodFromGenerator($this->rulesMethod());
         if (!empty($this->messages)) $this->class->addMethodFromGenerator($this->messagesMethod());
         return $this;

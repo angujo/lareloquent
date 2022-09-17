@@ -31,7 +31,7 @@ class BaseRequest extends FileCreator
         'mac_address' => 'Ensure valid mac address is entered!',
         'uuid'        => 'Invalid UUID has been entered!',
         'file'        => 'File for :attribute is missing or not uploaded!',
-        'required'    => "Value must be required",
+        'required'    => ":attribute is required and cannot be null",
         'email'       => "Ensure a valid email is entered!",
         'integer'     => "Only integers allowed for :attribute field!",
         'numeric'     => "Only numeric entries allowed for :attribute field!",
