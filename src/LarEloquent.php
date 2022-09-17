@@ -2,6 +2,7 @@
 
 namespace Angujo\Lareloquent;
 
+use Angujo\Lareloquent\Factory\BaseRequest;
 use Angujo\Lareloquent\Factory\Config;
 use Angujo\Lareloquent\Factory\DBConnection;
 use Angujo\Lareloquent\Factory\Model;
@@ -39,6 +40,9 @@ class LarEloquent
 
     public function setModels(\Closure $pre = null, \Closure $post = null)
     {
+        if (LarEloquent::config()->requests) {
+            BaseRequest::Write();
+        }
         foreach ($this->connection->Tables() as $table) {
             if ($pre && is_callable($pre)) $pre($table);
             /** @var TraitModel|Model $model */

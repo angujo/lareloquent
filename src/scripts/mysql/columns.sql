@@ -4,8 +4,8 @@ select  r.REFERENCED_TABLE_NAME, r.REFERENCED_COLUMN_NAME, c.TABLE_NAME, c.COLUM
      , if(1=regexp_like(COLUMN_KEY,'(^|[:space:])UNI([:space:]|$)') ,true,false) is_UNIQUE
      , if(1=regexp_like(EXTRA,'(^|[:space:])auto_increment([:space:]|$)') ,true,false) INCREMENTS
      , if(1=regexp_like(EXTRA,'[:space:]+on([:space:]+)update([:space:]+)','i') ,true,false) IS_UPDATING
-     , CHARACTER_MAXIMUM_LENGTH
-     , COLUMN_TYPE
+     , IFNULL(CHARACTER_MAXIMUM_LENGTH,NUMERIC_PRECISION) AS CHARACTER_MAXIMUM_LENGTH
+     , COLUMN_TYPE, NUMERIC_SCALE
 from information_schema.`COLUMNS` c
          left join (select
                         rc.CONSTRAINT_SCHEMA, rc.TABLE_NAME, rc.REFERENCED_TABLE_NAME, kcu.COLUMN_NAME, kcu.REFERENCED_COLUMN_NAME

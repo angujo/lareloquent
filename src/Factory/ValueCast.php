@@ -42,6 +42,8 @@ class ValueCast
     : ?string
     {
         if (!empty($this->cast)) return $this->cast;
+        if ($this->column->isArray()) return $this->cast = 'array';
+        if ($this->column->isJson()) return $this->cast = AsArrayObject::class;
         $casts = array_merge($this->defaultCasts(), LarEloquent::config()->type_casts);
         foreach ($casts as $type => $cast) {
             if ($this->validType($type) || $this->validColumnName($type)) {

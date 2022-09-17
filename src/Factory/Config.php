@@ -54,6 +54,7 @@ use function Angujo\Lareloquent\str_equal;
  * @property string[]    $hidden_columns
  * @property string[]    $local_scopes
  * @property string[]    $guarded_columns
+ * @property string[]    $identified_columns
  */
 class Config
 {

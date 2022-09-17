@@ -3,6 +3,7 @@
 namespace Angujo\Lareloquent\Models;
 
 use Angujo\Lareloquent\Enums\DataType;
+use Angujo\Lareloquent\Factory\BaseRequest;
 use Angujo\Lareloquent\Factory\ValueCast;
 use Angujo\Lareloquent\LarEloquent;
 use Angujo\Lareloquent\Enums\SQLType;
@@ -27,6 +28,7 @@ class DBColumn
     public string      $column_comment;
     public int|null    $ordinal_position;
     public int|null    $character_maximum_length = null;
+    public int|null    $numeric_scale            = null;
     public string|null $column_default;
     public string      $data_type;
     public bool        $is_nullable;
@@ -35,7 +37,24 @@ class DBColumn
     public bool        $increments;
     public bool        $is_updating;
 
-    private ValueCast|null $valueCast = null;
+    private ValueCast|null $valueCast   = null;
+    private ?DataType      $id_type;
+    private array          $_validation = [];
+
+    public function getValidation()
+    : array
+    {
+        if (empty($this->column_comment)) return [];
+        if (!empty($this->_validation)) return $this->_validation;
+        $raw_valids = explode(';', preg_replace('/^(.*?)validation(\s+)?:(\s+)?\{(.*?)\}(.*?)$/', '$4', $this->column_comment));
+
+        $raw_valids = array_values(array_map(function($v){ return array_map('trim', explode(':', $v)); }, $raw_valids));
+        $raw_valids = array_combine(array_column($raw_valids, 0), array_map(function($v){
+            array_shift($v);
+            return implode('', $v);
+        }, $raw_valids));
+        return $this->_validation = array_filter($raw_valids, function($k){ return array_key_exists(strtolower($k), BaseRequest::$default_messages); }, ARRAY_FILTER_USE_KEY);
+    }
 
     public function cast()
     {
@@ -134,11 +153,13 @@ class DBColumn
             case SQLType::DATETIME->value:
             case SQLType::TIMESTAMP->value:
                 return DataType::DATETIME;
-            case SQLType::ENUM->value:
             case SQLType::JSON->value:
+                return DataType::JSON;
+            case SQLType::SET->value:
+                return DataType::ARRAY;
+            case SQLType::ENUM->value:
             case SQLType::TEXT->value:
             case SQLType::MEDIUMTEXT->value:
-            case SQLType::SET->value:
             case SQLType::CHAR->value:
             case SQLType::BINARY->value:
             case SQLType::VARBINARY->value:
@@ -153,6 +174,97 @@ class DBColumn
             default:
                 return DataType::STRING;
         }
+    }
+
+    public function isMacAddress()
+    : bool
+    {
+        return DataType::MAC_ADDRESS === $this->getTypeId();
+    }
+
+    public function isUUID()
+    : bool
+    {
+        return DataType::UUID === $this->getTypeId();
+    }
+
+    public function isURL()
+    : bool
+    {
+        return DataType::URL === $this->getTypeId();
+    }
+
+    public function isEmail()
+    : bool
+    {
+        return DataType::EMAIL === $this->getTypeId();
+    }
+
+    public function isIpAddress()
+    : bool
+    {
+        return DataType::IP === $this->getTypeId();
+    }
+
+    public function isArray()
+    : bool
+    {
+        return in_array(DataType::ARRAY, [$this->getTypeId(), $this->PhpDataType()]);
+    }
+
+    public function isImage()
+    : bool
+    {
+        return DataType::IMAGE === $this->getTypeId();
+    }
+
+    public function isFile()
+    : bool
+    {
+        return DataType::FILE === $this->getTypeId();
+    }
+
+    public function isJson()
+    : bool
+    {
+        return in_array(DataType::JSON, [$this->getTypeId(), $this->PhpDataType()]);
+    }
+
+    protected function getTypeId()
+    : DataType
+    {
+        if (isset($this->id_type)) return $this->id_type;
+        $identifiers = is_array(LarEloquent::config()->identified_columns) ? LarEloquent::config()->identified_columns : [];
+        $permitted   = [DataType::ARRAY->value, DataType::IMAGE->value, DataType::FILE->value, DataType::JSON->value, DataType::IP->value,
+                        DataType::UUID->value, DataType::URL->value, DataType::EMAIL->value, DataType::MAC_ADDRESS->value,];
+        foreach ($identifiers as $key => $identities) {
+            if (!(is_array($identities) && in_array($key, $permitted))) continue;
+            foreach ($identities as $identity) {
+                if ($this->idTypeMatches($identity)) return $this->id_type = (DataType::tryFrom($key) ?? DataType::NONE);
+            }
+        }
+        return $this->id_type = DataType::NONE;
+    }
+
+    private function idTypeMatches($matches)
+    {
+        if (!is_array($matches)) return false;
+        $matches = array_intersect_key($matches, array_flip(['name', 'type']));
+        return count($matches) > 0 && (!array_key_exists('name', $matches) || $this->nameMatches($matches['name'])) &&
+            (!array_key_exists('type', $matches) || $this->typeMatches($matches['type']));
+    }
+
+    private function nameMatches($match)
+    {
+        if (!is_string($match)) return false;
+        $match = preg_replace('/%/', '(.*?)', $match);
+        return 1 === preg_match("/$match/", $this->column_name);
+    }
+
+    private function typeMatches($match)
+    {
+        if (!is_string($match)) return false;
+        return str_equal($match, $this->data_type);
     }
 
     protected function setTraits()
@@ -170,5 +282,13 @@ class DBColumn
         }
 
         if ($this->isDeletedColumn()) $this->addUse(SoftDeletes::class);
+    }
+
+    public function maxValue()
+    {
+        if (!in_array($this->PhpDataType(), [DataType::INT, DataType::STRING, DataType::FLOAT])) return null;
+        return DataType::STRING == $this->PhpDataType() ?
+            $this->character_maximum_length :
+            floatval("1".implode('', array_map(function($v){ return "0"; }, range(1, $this->character_maximum_length - $this->numeric_scale)))) - 1;
     }
 }

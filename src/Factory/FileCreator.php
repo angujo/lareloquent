@@ -15,7 +15,7 @@ use function Angujo\Lareloquent\str_equal;
 abstract class FileCreator
 {
     protected string  $name;
-    protected string  $table_name;
+    protected ?string $table_name;
     protected ?string $parent_class;
     protected string  $namespace;
     protected string  $dir;
@@ -30,7 +30,7 @@ abstract class FileCreator
         if (!empty($this->namespace)) $this->class->setNamespaceName($this->namespace);
         if (!empty($this->parent_class) && !is_a($this, TraitModel::class)) {
             $alias = null;
-            if (str_equal(basename($this->parent_class), model_name($this->table_name))) {
+            if (!empty($this->table_name) && str_equal(basename($this->parent_class), model_name($this->table_name))) {
                 $alias = model_name(implode('_', array_slice(explode('\\', $this->parent_class), -2, 2)));
             }
             $this->class->addUse($this->parent_class, $alias)->setExtendedClass($this->parent_class);
