@@ -63,7 +63,7 @@ class ValueCast
     {
         if (!str_starts_with($type, 'type:')) return false;
         $type = preg_replace('/^type:/', '', $type);
-        return (in_array(strtolower($type), array_map(fn(SQLType $t) => $t->value, SQLType::cases())) && str_equal($this->column->data_type, $type));
+        return in_array(strtolower($type), array_column(SQLType::cases(),'value')) && (str_equal($this->column->data_type, $type) || (str_equal('string',$type) && str_equal($this->column->data_type,SQLType::VARCHAR->value)));
     }
 
     public static function getCast(DBColumn $column)

@@ -244,4 +244,32 @@ return
          * E.g. 'users'=>['password', 'remember_token',]
          */
         'guarded_columns'        => ['users' => ['password', 'remember_token',],],
+        /*
+         * Help in identifying column values based on a type.
+         * E.g. a column can hold arrays i.e. [1,2,3,..] but is of data type string with name hint ending with '_array' therefore ..'array'=>[['name'=>'%_array','type'=>'string']]..
+         * Keys can only be any of array, json, image, file, ip,uuid,url,email,mac_address
+         * The items should be set in order of priorities to avoid conflicts
+         */
+        'identified_columns'     => [
+            'json'        => [['name' => '%_json', 'type' => 'string'], ['type' => 'json']],
+            'array'       => [['name' => '%_array', 'type' => 'string'], ['name' => '%_array', 'type' => 'json'], ['type' => 'set']],
+            'image'       => [['name' => '%_image', 'type' => 'string'], ['name' => '%_picture', 'type' => 'string']],
+            'file'        => [['name' => '%_file', 'type' => 'string'],],
+            'ip'          => [['name' => '%_ip', 'type' => 'string'], ['name' => 'ip_address', 'type' => 'string'],],
+            'uuid'        => [['name' => '%uuid', 'type' => 'string'],],
+            'url'         => [['name' => '%url', 'type' => 'string'],],
+            'email'       => [['name' => '%email', 'type' => 'string'],],
+            'mac_address' => [['name' => '%mac_address', 'type' => 'string'],],
+        ],
+        /*
+         * VALIDATION ON REQUEST CLASSES
+         * Validations can be added on each and every column in the db table as comments
+         * Laravel validations are supported
+         * @see https://laravel.com/docs/validation#available-validation-rules
+         * comment validations should follow the format, validation:{validation_name:conditions,...;validation_name2:conditions,..;...}
+         * All validations should be separated by semicolon (;)
+         * E.g. For a table with start (start_date) and end (end_date) dates, column can have validation comment as
+         *      start_date Column comment "validation:{lte:end_date}"
+         *      end_date Column comment "validation:{gte:start_date}"
+         */
     ];

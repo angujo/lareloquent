@@ -59,7 +59,7 @@ class Request extends FileCreator
     private function parseRules()
     {
         foreach ($this->columns as $column) {
-            $rules = array_merge($this->getRule($column), $column->getValidation());
+            $rules     = array_merge($this->getRule($column),  $column->getValidation());
             if (empty($rules)) continue;
             $this->messages                    = array_merge($this->messages, $this->getMessages(array_keys($rules), $column));
             $this->rules[$column->column_name] = array_map(function($k, $v){ return empty($v) ? $k : "$k:$v"; }, array_keys($rules), $rules);
@@ -81,9 +81,12 @@ class Request extends FileCreator
         elseif ($column->isImage()) $rules['image'] = '';
         elseif ($column->isFile()) $rules['file'] = '';
         elseif ($column->isMacAddress()) $rules['mac_address'] = '';
-        elseif ($column->PhpDataType() === DataType::INT) $rules['integer'] = '';
-        elseif ($column->PhpDataType() === DataType::FLOAT) $rules['numeric'] = '';
+
+        if ($column->PhpDataType() === DataType::INT) {
+            $rules['integer'] = '';
+        } elseif ($column->PhpDataType() === DataType::FLOAT) $rules['numeric'] = '';
         elseif ($column->PhpDataType() === DataType::BOOL) $rules['boolean'] = '';
+
         if (!empty($column->character_maximum_length) && DataType::STRING === $column->PhpDataType()) $rules['max'] = "{$column->character_maximum_length}";
         if ($column->is_unique) $rules['unique'] = "{$this->table->name},{$column->column_name}";
         if (!empty($column->referenced_column_name)) $rules['exists'] = "{$column->referenced_table_name},{$column->referenced_column_name}";

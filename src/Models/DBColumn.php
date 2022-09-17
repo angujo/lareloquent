@@ -264,7 +264,7 @@ class DBColumn
     private function typeMatches($match)
     {
         if (!is_string($match)) return false;
-        return str_equal($match, $this->data_type);
+        return str_equal($match, $this->data_type) || (str_equal('string', $match) && str_equal($this->data_type, SQLType::VARCHAR->value));
     }
 
     protected function setTraits()
