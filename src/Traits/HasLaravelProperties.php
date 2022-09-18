@@ -57,10 +57,9 @@ trait HasLaravelProperties
             }
             if (!isset($this->deletedCol) && $column->isDeletedColumn()) {
                 if (!str_equal('deleted_at', ($this->deletedCol = $column)->column_name)) {
-                    $this->class->addConstant('DELETED_AT', $this->deletedCol->column_name, true)
-                                ->addUse(SoftDeletes::class)
-                                ->addTrait('SoftDeletes');
+                    $this->class->addConstant('DELETED_AT', $this->deletedCol->column_name, true);
                 }
+                $this->class->addUse(SoftDeletes::class)->addTrait('SoftDeletes');
             }
         }
         return $this;
