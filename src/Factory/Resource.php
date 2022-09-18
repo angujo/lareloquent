@@ -26,7 +26,7 @@ class Resource extends FileCreator
     {
         $this->columns      = $columns;
         $this->table        = $table;
-        $this->name         = model_name(LarEloquent::config()->base_resource_prefix.'_'.($this->table_name=$this->table->name).'_'.LarEloquent::config()->resource_suffix);
+        $this->name         = model_name(LarEloquent::config()->base_resource_prefix.'_'.model_name($this->table_name=$this->table->name).'_'.LarEloquent::config()->resource_suffix);
         $this->parent_class = JsonResource::class;
         $this->dir          = Path::Combine(LarEloquent::config()->resources_dir, model_name(LarEloquent::config()->base_resource_prefix));
         $this->namespace    = implode('\\', [LarEloquent::config()->resource_namespace, model_name(LarEloquent::config()->base_resource_prefix)]);
