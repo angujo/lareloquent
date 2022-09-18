@@ -108,7 +108,7 @@ class DBReferential
     {
         return match ($this->ref) {
             Referential::BELONGSTO, Referential::ONETHROUGH, Referential::ONE2ONE => model_name(in_singular($this->referenced_table_name)),
-            Referential::ONE2MANY, Referential::BELONGSTOMANY, Referential::MANYTHROUGH => model_name(in_singular($this->referenced_table_name)).'[]',
+            Referential::ONE2MANY, Referential::BELONGSTOMANY, Referential::MANYTHROUGH => model_name(in_plural($this->referenced_table_name)).'[]',
             default => null,
         };
     }
