@@ -59,7 +59,7 @@ class DBReferential
             case Referential::BELONGSTO:
                 return in_singular($this->fromColumnName());
             case Referential::ONE2MANY:
-                return in_plural((!str_equal($col_n = in_singular($this->fromColumnName(true)), in_singular($this->table_name))) ?$col_n : $this->referenced_table_name);
+                return in_plural((!str_equal($col_n = in_singular($this->fromColumnName(true)), in_singular($this->table_name))) ?implode('_',[$col_n,$this->referenced_table_name]) : $this->referenced_table_name);
             case Referential::ONE2ONE:
                 if (!str_equal($col_n = in_singular($this->fromColumnName(true)), in_singular($this->table_name))) return implode('_', [$col_n, in_singular($this->referenced_table_name)]);
             case Referential::MANYTHROUGH:
