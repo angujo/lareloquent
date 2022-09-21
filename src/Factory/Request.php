@@ -67,7 +67,10 @@ class Request extends FileCreator
                       ."foreach (\$this->route()->parameters as \$parameter) {\n"
                       ."\tif (is_a(\$parameter, ".basename($class)."::class)) return \$this->is_loaded = true;\n"
                       ."}\n"
-                      ."return \$this->is_loaded = \$this->has('".$this->primaryColumn->column_name."') && !empty(\$this->get('".$this->primaryColumn->column_name."'));")
+                      ."return \$this->is_loaded = ".
+                      ($this->primaryColumn ?
+                          "\$this->has('".$this->primaryColumn->column_name."') && !empty(\$this->get('".$this->primaryColumn->column_name."'))" :
+                          "true").';')
             ->setFlags(AbstractMemberGenerator::FLAG_PROTECTED);
 
     }
@@ -85,7 +88,7 @@ class Request extends FileCreator
     private function parseRules()
     {
         foreach ($this->columns as $column) {
-            if (empty($this->primaryColumn) && $column->is_primary) $this->primaryColumn = $column;
+            if (empty($this->primaryColumn) && ($column->is_primary || ($this->table->is_view && str_equal(LarEloquent::config()->primary_key_name, $column->column_name)))) $this->primaryColumn = $column;
             $rules = array_merge($this->getRule($column), $column->getValidation());
             if (empty($rules)) continue;
             $this->messages = array_merge($this->messages, $this->getMessages(array_keys($rules), $column));

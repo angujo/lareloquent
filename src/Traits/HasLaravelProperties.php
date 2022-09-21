@@ -40,7 +40,7 @@ trait HasLaravelProperties
                 $this->class->addUse($column->enumClass());
             }
             $this->class->getDocBlock()->setTag($column->docPropertyTag());
-            if (!isset($this->primaryCol) && $column->is_primary) $this->primaryCol = $column;
+            if (!isset($this->primaryCol) && ($column->is_primary || ($this->table->is_view && str_equal(LarEloquent::config()->primary_key_name, $column->column_name)))) $this->primaryCol = $column;
             if (LarEloquent::config()->constant_column_names && !is_a($this, TraitModel::class) && !$this->class->hasConstant($column->constantName())) {
                 $this->class->addConstantFromGenerator($column->constantProperty());
             }
@@ -55,7 +55,7 @@ trait HasLaravelProperties
                     $this->class->addConstant('UPDATED_AT', $this->updatedCol->column_name, true);
                 }
             }
-            if (!isset($this->deletedCol) && $column->isDeletedColumn()) {
+            if (!$this->table->is_view && !isset($this->deletedCol) && $column->isDeletedColumn()) {
                 if (!str_equal('deleted_at', ($this->deletedCol = $column)->column_name)) {
                     $this->class->addConstant('DELETED_AT', $this->deletedCol->column_name, true);
                 }

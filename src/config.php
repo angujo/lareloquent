@@ -51,6 +51,12 @@ return
          */
         'date_format'            => 'Y-M-d HH:i:s',
         /*
+         * Primary Key Name will mostly be used with views. This will flag the column as the primary for a view.
+         * Tables can have a different name and easily determined.
+         * Default: id
+         */
+        'primary_key_name'            => 'id',
+        /*
          * Allow defining scopes for various models.
          * This will add abstract scope methods to be implemented as well as set method doc for easy coding.
          * E.g. ['users'=>['active','expired'],'products'=>'sold',...]

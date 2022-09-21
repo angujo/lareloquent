@@ -1,1 +1,1 @@
-select TABLE_NAME name,TABLE_TYPE `type`, TABLE_COMMENT `comment` from information_schema.TABLES t where TABLE_SCHEMA ='{db}' {andwhere}
+select TABLE_NAME name,TABLE_TYPE `type`, TABLE_COMMENT `comment`, if(lower(TABLE_TYPE) ='view',true,false) is_view from information_schema.TABLES t where TABLE_SCHEMA ='{db}' {andwhere}

@@ -12,6 +12,7 @@ use function Angujo\Lareloquent\str_equal;
  * @property string|null $model_class
  * @property string      $base_dir
  * @property string      $namespace
+ * @property string      $primary_key_name
  * @property string      $eloquent_extension_dir
  * @property bool        $base_abstract
  * @property string      $base_abstract_prefix
@@ -89,11 +90,14 @@ class Config
     public function __get(string $name)
     {
         $key = strtolower($name);
-        if (in_array($key, ['base_abstract_prefix', 'base_resource_prefix','base_request_prefix']) && (!isset($this->configs[$key]) || empty($this->configs[$key]))) {
+        if (in_array($key, ['base_abstract_prefix', 'base_resource_prefix', 'base_request_prefix']) && (!isset($this->configs[$key]) || empty($this->configs[$key]))) {
             $this->configs[$key] = 'Base';
         }
         if (str_equal($key, 'eloquent_extension_dir') && (!isset($this->configs[$key]) || empty($this->configs[$key]))) {
             $this->configs[$key] = 'Extensions';// str_rand(10, numbers: false, special_xters: false);
+        }
+        if (str_equal($key, 'primary_key_name') && (!isset($this->configs[$key]) || empty($this->configs[$key]))) {
+            $this->configs[$key] = 'id';// str_rand(10, numbers: false, special_xters: false);
         }
         return $this->configs[$key] ?? null;
     }

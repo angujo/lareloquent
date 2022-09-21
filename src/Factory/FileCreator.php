@@ -23,7 +23,7 @@ abstract class FileCreator
     protected TraitGenerator|ClassGenerator $class;
     protected bool                          $overwrites = true;
 
-    public function __construct($overwrites = true)
+    public function __construct(bool $overwrites = true)
     {
         $this->overwrites = $overwrites;
         $this->class      = new ClassGenerator($this->name);

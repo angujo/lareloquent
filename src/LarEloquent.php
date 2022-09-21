@@ -48,10 +48,12 @@ class LarEloquent
             /** @var TraitModel|Model $model */
             $model = self::config()->model_trait && in_array($table->name, self::config()->trait_model_tables) ? TraitModel::Write($this->connection, $table) : Model::Write($this->connection, $table);
             WorkModel::Write($table);
-            if (LarEloquent::config()->observers) Observer::Write($table);
-            if (LarEloquent::config()->requests) {
-                Request::Write($table, $model->columns);
-                WorkRequest::Write($table);
+            if (!$table->is_view) {
+                if (LarEloquent::config()->observers) Observer::Write($table);
+                if (LarEloquent::config()->requests) {
+                    Request::Write($table, $model->columns);
+                    WorkRequest::Write($table);
+                }
             }
             if (LarEloquent::config()->resources) {
                 Resource::Write($table, $model->columns);
