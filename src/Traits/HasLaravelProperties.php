@@ -152,7 +152,7 @@ trait HasLaravelProperties
                 (new PropertyGenerator('incrementing', $this->primaryCol->increments))
                     ->setDocBlock((new DocBlockGenerator('Indicate if Primary Key is auto-incrementing.'))
                                       ->setTag((new VarTag('incrementing', 'bool'))))
-                    ->setFlags([AbstractMemberGenerator::FLAG_PROTECTED]));
+                    ->setFlags([AbstractMemberGenerator::FLAG_PUBLIC]));
         }
         if (DataType::INT != $this->primaryCol->PhpDataType()) {
             $this->class->addPropertyFromGenerator(
