@@ -13,6 +13,10 @@ defined('LARELOQ_TEST') || define('LARELOQ_TEST', true);
 
 echo "Starting off...\n";
 
+$n='account_uses';
+
+// var_dump((in_singular($n)));die;
+
 
 $lare = new LarEloquent(DBConnection::fromDefault());
 $lare->setModels(function(DBTable $table){ echo "$table->name\n"; });

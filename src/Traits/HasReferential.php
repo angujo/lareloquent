@@ -72,7 +72,7 @@ trait HasReferential
             if (!LarEloquent::validTable($referential->referenced_table_name)) continue;
             $this->class->addMethodFromGenerator($this->belongsToMethod($referential))
                         ->addUse(LarEloquent::config()->namespace.'\\'.model_name($referential->referenced_table_name))
-                        ->getDocBlock()->setTag($referential->getTagDocProperty());
+                        ->getDocBlock()->setTag($tag=$referential->getTagDocProperty());
             if (!$this->class->hasUse($referential->getReturnClass())) $this->class->addUse($referential->getReturnClass());
         }
         return $this;
