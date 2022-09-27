@@ -25,7 +25,9 @@ trait HasReferential
             ->setTag(GeneralTag::returnTag(basename($referential->getReturnClass())));
         if (!empty($description)) $doc->setShortDescription($description);
         $name = $referential->functionName();
-        $this->class->addUse($referential->getReturnClass());
+        $this->class->addUse($referential->getReturnClass())
+                    ->addUse(LarEloquent::config()->namespace.'\\'.model_name($referential->referenced_table_name))
+                    ->getDocBlock()->setTag($referential->getTagDocProperty());
         if ($this->class->hasMethod($name)) $name = $name.model_name(str_rand(special_xters: false));
         return (new MethodGenerator($name))
             ->setDocBlock($doc)
@@ -48,9 +50,7 @@ trait HasReferential
         /** @var DBReferential $referential */
         foreach ($this->connection->one2One($this->table->name) as $referential) {
             if (!LarEloquent::validTable($referential->referenced_table_name)) continue;
-            $this->class->addMethodFromGenerator($this->one2OneMethod($referential))
-                        ->addUse(LarEloquent::config()->namespace.'\\'.model_name($referential->referenced_table_name))
-                        ->getDocBlock()->setTag($referential->getTagDocProperty());
+            $this->class->addMethodFromGenerator($this->one2OneMethod($referential));
         }
         return $this;
     }
@@ -70,9 +70,7 @@ trait HasReferential
         /** @var DBReferential $referential */
         foreach ($this->connection->BelongsTo($this->table->name) as $referential) {
             if (!LarEloquent::validTable($referential->referenced_table_name)) continue;
-            $this->class->addMethodFromGenerator($this->belongsToMethod($referential))
-                        ->addUse(LarEloquent::config()->namespace.'\\'.model_name($referential->referenced_table_name))
-                        ->getDocBlock()->setTag($tag=$referential->getTagDocProperty());
+            $this->class->addMethodFromGenerator($this->belongsToMethod($referential));
             if (!$this->class->hasUse($referential->getReturnClass())) $this->class->addUse($referential->getReturnClass());
         }
         return $this;
@@ -93,9 +91,7 @@ trait HasReferential
         /** @var DBReferential $referential */
         foreach ($this->connection->belongsToMany($this->table->name) as $referential) {
             if (!LarEloquent::validTable($referential->referenced_table_name)) continue;
-            $this->class->addMethodFromGenerator($this->belongsToManyMethod($referential))
-                        ->addUse(LarEloquent::config()->namespace.'\\'.model_name($referential->referenced_table_name))
-                        ->getDocBlock()->setTag($referential->getTagDocProperty());
+            $this->class->addMethodFromGenerator($this->belongsToManyMethod($referential));
             if (!$this->class->hasUse($referential->getReturnClass())) $this->class->addUse($referential->getReturnClass());
         }
         return $this;
@@ -116,9 +112,7 @@ trait HasReferential
         /** @var DBReferential $referential */
         foreach ($this->connection->One2Many($this->table->name) as $referential) {
             if (!LarEloquent::validTable($referential->referenced_table_name)) continue;
-            $this->class->addMethodFromGenerator($this->oneToManyMethod($referential))
-                        ->addUse(LarEloquent::config()->namespace.'\\'.model_name($referential->referenced_table_name))
-                        ->getDocBlock()->setTag($referential->getTagDocProperty());
+            $this->class->addMethodFromGenerator($this->oneToManyMethod($referential));
             if (!$this->class->hasUse($referential->getReturnClass())) $this->class->addUse($referential->getReturnClass());
         }
         return $this;
@@ -139,9 +133,7 @@ trait HasReferential
         /** @var DBReferential $referential */
         foreach ($this->connection->oneThrough($this->table->name) as $referential) {
             if (!LarEloquent::validTable($referential->referenced_table_name)) continue;
-            $this->class->addMethodFromGenerator($this->oneThroughMethod($referential))
-                        ->addUse(LarEloquent::config()->namespace.'\\'.model_name($referential->referenced_table_name))
-                        ->getDocBlock()->setTag($referential->getTagDocProperty());
+            $this->class->addMethodFromGenerator($this->oneThroughMethod($referential));
             if (!$this->class->hasUse($referential->getReturnClass())) $this->class->addUse($referential->getReturnClass());
         }
         return $this;
@@ -162,9 +154,7 @@ trait HasReferential
         /** @var DBReferential $referential */
         foreach ($this->connection->manyThrough($this->table->name) as $referential) {
             if (!LarEloquent::validTable($referential->referenced_table_name) || $this->class->hasMethod($referential->functionName())) continue;
-            $this->class->addMethodFromGenerator($this->manyThroughMethod($referential))
-                        ->addUse(LarEloquent::config()->namespace.'\\'.model_name($referential->referenced_table_name))
-                        ->getDocBlock()->setTag($referential->getTagDocProperty());
+            $this->class->addMethodFromGenerator($this->manyThroughMethod($referential));
             if (!$this->class->hasUse($referential->getReturnClass())) $this->class->addUse($referential->getReturnClass());
         }
         return $this;

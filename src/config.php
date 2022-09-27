@@ -182,6 +182,14 @@ return
          * NOTE: No two names should be on same table.
          */
         'update_columns'         => ['updated_at', 'updated'],
+        /*
+         * For a self referencing tables, indicate the column names that are likely to be used
+         * This will use \Staudenmeir\LaravelAdjacencyList\Eloquent\HasRecursiveRelationships class
+         * FOr more details;
+         * @see https://github.com/staudenmeir/laravel-adjacency-list
+         * To disable, set the array to empty
+         */
+        'parent_columns'         => ['parent_id', ],
 
         /*
          * Tables to be excluded from model generation

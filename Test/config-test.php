@@ -15,7 +15,7 @@ return
         /*
          * Directory path to put the models
          */
-        'base_dir'               => Path::Combine(ROOT_DIR,'Test', 'output'),
+        'base_dir'               => Path::Combine(ROOT_DIR, 'Test', 'output'),
         /*
          * Namespace for the models
          */
@@ -64,7 +64,7 @@ return
         /*
          * Directory path to put the models' resources
          */
-        'resources_dir'          => Path::Combine(ROOT_DIR,'Test', 'output', 'Resources'),
+        'resources_dir'          => Path::Combine(ROOT_DIR, 'Test', 'output', 'Resources'),
         /*
          * Namespace for the resources
          */
@@ -87,7 +87,7 @@ return
         /*
          * Directory path to put the models' requests
          */
-        'requests_dir'           => Path::Combine(ROOT_DIR,'Test', 'output', 'Requests'),
+        'requests_dir'           => Path::Combine(ROOT_DIR, 'Test', 'output', 'Requests'),
         /*
          * Namespace for the requests
          */
@@ -108,7 +108,7 @@ return
          * If validation enabled with option of [validate_on_save] set to TRUE,
          * the method will be initiated inside the observer's "saving" method.
          */
-        'observers_dir'          => Path::Combine(ROOT_DIR,'Test', 'output', 'Observers'),
+        'observers_dir'          => Path::Combine(ROOT_DIR, 'Test', 'output', 'Observers'),
         /*
          * Namespace for the observers
          */
@@ -127,7 +127,7 @@ return
          * Enums will be created for evey column of type enum
          * Table name and column name will be used as the enum name.
          */
-        'enums_dir'              => Path::Combine(ROOT_DIR,'Test', 'output', 'Enums'),
+        'enums_dir'              => Path::Combine(ROOT_DIR, 'Test', 'output', 'Enums'),
         /*
          * Namespace for the enums
          */
@@ -171,6 +171,7 @@ return
          * NOTE: No two names should be on same table.
          */
         'update_columns'         => ['updated_at', 'updated'],
+        'parent_columns'         => ['parent_id'],
 
         /*
          * Tables to be excluded from model generation

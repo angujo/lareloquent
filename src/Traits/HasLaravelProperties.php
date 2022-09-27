@@ -15,12 +15,14 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Laminas\Code\Generator\AbstractMemberGenerator;
 use Laminas\Code\Generator\DocBlock\Tag\MethodTag;
 use Laminas\Code\Generator\DocBlock\Tag\ParamTag;
+use Laminas\Code\Generator\DocBlock\Tag\PropertyTag;
 use Laminas\Code\Generator\DocBlock\Tag\ReturnTag;
 use Laminas\Code\Generator\DocBlock\Tag\VarTag;
 use Laminas\Code\Generator\DocBlockGenerator;
 use Laminas\Code\Generator\MethodGenerator;
 use Laminas\Code\Generator\ParameterGenerator;
 use Laminas\Code\Generator\PropertyGenerator;
+use Staudenmeir\LaravelAdjacencyList\Eloquent\HasRecursiveRelationships;
 use function Angujo\Lareloquent\in_plural;
 use function Angujo\Lareloquent\method_name;
 use function Angujo\Lareloquent\model_name;
@@ -28,6 +30,19 @@ use function Angujo\Lareloquent\str_equal;
 
 trait HasLaravelProperties
 {
+
+    private $recursiveMethods = ['ancestors'          => 'The model\'s recursive parents.',
+                                 'ancestorsAndSelf'   => 'The model\'s recursive parents and itself.',
+                                 'bloodline'          => 'The model\'s ancestors, descendants and itself.',
+                                 'children'           => 'The model\'s direct children.',
+                                 'childrenAndSelf'    => 'The model\'s direct children and itself.',
+                                 'descendants'        => 'The model\'s recursive children.',
+                                 'descendantsAndSelf' => 'The model\'s recursive children and itself.',
+                                 'parent'             => 'The model\'s direct parent.',
+                                 'parentAndSelf'      => 'The model\'s direct parent and itself.',
+                                 'rootAncestor'       => 'The model\'s topmost parent.',
+                                 'siblings'           => 'The parent\'s other children.',
+                                 'siblingsAndSelf'    => 'All the parent\'s children.',];
 
     private function parseColumns()
     : static
@@ -50,6 +65,15 @@ trait HasLaravelProperties
                     $this->class->addConstant('CREATED_AT', $this->createdCol->column_name, true);
                 }
             }
+            if (!is_a($this, TraitModel::class) && $column->isParentColumn()) {
+                $this->class->addUse(HasRecursiveRelationships::class)
+                            ->addTrait('HasRecursiveRelationships');
+                foreach ($this->recursiveMethods as $method => $desc) {
+                    if (str_equal('parent', $method)) continue;// Will need relooking.
+                    $this->class->getDocBlock()->setTag($this->recursivePropertyTag($method));
+                }
+                if (!str_equal('parent_id', $column->column_name)) $this->class->addMethodFromGenerator($this->parentKeyMethod($column->column_name));
+            }
             if (!isset($this->updatedCol) && $column->isUpdatedColumn()) {
                 if (!str_equal('updated_at', ($this->updatedCol = $column)->column_name)) {
                     $this->class->addConstant('UPDATED_AT', $this->updatedCol->column_name, true);
@@ -63,6 +87,21 @@ trait HasLaravelProperties
             }
         }
         return $this;
+    }
+
+    private function recursivePropertyTag($name)
+    {
+        return (new PropertyTag($name))
+            ->setTypes([model_name($this->table_name).(in_array($name, ['parent', 'rootAncestor']) ? '' : '[]')])
+            ->setDescription($this->recursiveMethods[$name]);
+    }
+
+    private function parentKeyMethod($column_name)
+    {
+        return (new MethodGenerator('getParentKeyName'))
+            ->setDocBlock((new DocBlockGenerator('Get column name for the parent key column!'))->setTag(new ReturnTag(['string'])))
+            ->setFlags([AbstractMemberGenerator::FLAG_PUBLIC])
+            ->setBody("return '$column_name';");
     }
 
     private function localScopes()

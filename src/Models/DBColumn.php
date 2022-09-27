@@ -93,6 +93,11 @@ class DBColumn
             ->setDescription($this->column_comment);
     }
 
+    public function isParentColumn()
+    {
+        return in_array($this->column_name, LarEloquent::config()->parent_columns);
+    }
+
     public function isCreatedColumn()
     {
         return in_array($this->column_name, LarEloquent::config()->create_columns) && $this->isDateTime();

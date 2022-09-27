@@ -43,6 +43,7 @@ use function Angujo\Lareloquent\str_equal;
  * @property string[]    $soft_delete_columns
  * @property string[]    $create_columns
  * @property string[]    $update_columns
+ * @property string[]    $parent_columns
  * @property string[]    $excluded_tables
  * @property string[]    $only_tables
  * @property string[]    $pivot_tables

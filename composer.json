@@ -24,7 +24,8 @@
     "paragonie/easydb": "3",
     "nesbot/carbon": "2.61.0",
     "plejus/pluralize": "dev-master",
-    "laminas/laminas-code": "4.7.x-dev"
+    "laminas/laminas-code": "4.7.x-dev",
+    "staudenmeir/laravel-adjacency-list": "dev-master"
   },
   "extra": {
     "laravel": {
