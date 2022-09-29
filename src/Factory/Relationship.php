@@ -8,13 +8,16 @@ use Angujo\Lareloquent\LarEloquent;
 use Angujo\Lareloquent\Models\DBReferential;
 use Angujo\Lareloquent\Models\GeneralTag;
 use Exception;
+use Laminas\Code\Generator\AbstractMemberGenerator;
 use Laminas\Code\Generator\ClassGenerator;
 use Laminas\Code\Generator\DocBlock\Tag\PropertyTag;
 use Laminas\Code\Generator\DocBlockGenerator;
 use Laminas\Code\Generator\MethodGenerator;
 use Laminas\Code\Generator\TraitGenerator;
 use function Angujo\Lareloquent\in_plural;
+use function Angujo\Lareloquent\method_name;
 use function Angujo\Lareloquent\model_name;
+use function Angujo\Lareloquent\str_rand;
 
 class Relationship
 {
@@ -140,15 +143,19 @@ class Relationship
         $m      = new self($referential);
         $method = $m->getMethod();
         if ($class->hasMethod($method->getName())) {
-            $ret = basename($referential->getReturnClass());
-            $cl  = basename($m->path);
-            $class->getDocBlock()->setTag(GeneralTag::fromContent('skipped', "{$method->getName()} $cl $ret"));
-            return;
+            $ret  = basename($referential->getReturnClass());
+            $cl   = basename($m->path);
+            $name = method_name($method->getName().'_'.str_rand(length: 10, upper: false, numbers: false, special_xters: false));
+            $class->getDocBlock()->setTag(GeneralTag::fromContent('skipped', "$name $cl $ret"));
+            $method->setName($name)
+                   ->setFlags(AbstractMemberGenerator::FLAG_PROTECTED)
+                   ->getDocBlock()->setLongDescription("Method need to be renamed or rewritten due to name conflict with another method.\nRewrite in the child class!");
+        } else {
+            $class->getDocBlock()->setTag($m->getTagProperty());
         }
         foreach ($m->getUses() as $use) {
             $class->addUse($use);
         }
-        $class->getDocBlock()->setTag($m->getTagProperty());
         $class->addMethodFromGenerator($method);
     }
 }
