@@ -52,9 +52,10 @@ trait HasLaravelProperties
                     $this->class->addConstant('CREATED_AT', $this->createdCol->column_name, true);
                 }
             }
-            if (!is_a($this, TraitModel::class) && $column->isParentColumn()) {
+            if ($column->isParentColumn()) {
                 $this->class->addUse(HasRecursiveRelationships::class)
-                            ->addTrait('HasRecursiveRelationships');
+                            ->addTrait('HasRecursiveRelationships')
+                            ->addUse(implode('\\', [LarEloquent::config()->namespace, model_name($this->table_name)]));
                 foreach (RecursiveMethod::cases() as $method) {
                     $this->class->getDocBlock()->setTag($this->recursivePropertyTag($method->value));
                 }
