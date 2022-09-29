@@ -133,13 +133,13 @@ class DBConnection
     public function BelongsTo(string $tbl_name)
     : \Generator
     {
-        return $this->Referential($tbl_name, __FUNCTION__, Referential::BELONGSTO);
+        return $this->Referential($tbl_name, __FUNCTION__, Referential::BELONGS_TO);
     }
 
     public function belongsToMany(string $tbl_name)
     : \Generator
     {
-        return $this->Referential($tbl_name, __FUNCTION__, Referential::BELONGSTOMANY);
+        return $this->Referential($tbl_name, __FUNCTION__, Referential::BELONGS_TO_MANY);
     }
 
     public function One2Many(string $tbl_name)
@@ -151,13 +151,13 @@ class DBConnection
     public function oneThrough(string $tbl_name)
     : \Generator
     {
-        return $this->Referential($tbl_name, __FUNCTION__, Referential::ONETHROUGH);
+        return $this->Referential($tbl_name, __FUNCTION__, Referential::ONE_THROUGH);
     }
 
     public function manyThrough(string $tbl_name)
     : \Generator
     {
-        return $this->Referential($tbl_name, __FUNCTION__, Referential::MANYTHROUGH);
+        return $this->Referential($tbl_name, __FUNCTION__, Referential::MANY_THROUGH);
     }
 
     private function Referential(string $tbl_name, string $file_name, Referential $referential)

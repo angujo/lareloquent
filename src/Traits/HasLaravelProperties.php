@@ -3,6 +3,7 @@
 namespace Angujo\Lareloquent\Traits;
 
 use Angujo\Lareloquent\Enums\DataType;
+use Angujo\Lareloquent\Enums\RecursiveMethod;
 use Angujo\Lareloquent\Factory\ColumnEnum;
 use Angujo\Lareloquent\Factory\TraitModel;
 use Angujo\Lareloquent\Factory\ValueCast;
@@ -31,19 +32,6 @@ use function Angujo\Lareloquent\str_equal;
 trait HasLaravelProperties
 {
 
-    private $recursiveMethods = ['ancestors'          => 'The model\'s recursive parents.',
-                                 'ancestorsAndSelf'   => 'The model\'s recursive parents and itself.',
-                                 'bloodline'          => 'The model\'s ancestors, descendants and itself.',
-                                 'children'           => 'The model\'s direct children.',
-                                 'childrenAndSelf'    => 'The model\'s direct children and itself.',
-                                 'descendants'        => 'The model\'s recursive children.',
-                                 'descendantsAndSelf' => 'The model\'s recursive children and itself.',
-                                 'parent'             => 'The model\'s direct parent.',
-                                 'parentAndSelf'      => 'The model\'s direct parent and itself.',
-                                 'rootAncestor'       => 'The model\'s topmost parent.',
-                                 'siblings'           => 'The parent\'s other children.',
-                                 'siblingsAndSelf'    => 'All the parent\'s children.',];
-
     private function parseColumns()
     : static
     {
@@ -68,9 +56,8 @@ trait HasLaravelProperties
             if (!is_a($this, TraitModel::class) && $column->isParentColumn()) {
                 $this->class->addUse(HasRecursiveRelationships::class)
                             ->addTrait('HasRecursiveRelationships');
-                foreach ($this->recursiveMethods as $method => $desc) {
-                    if (str_equal('parent', $method)) continue;// Will need relooking.
-                    $this->class->getDocBlock()->setTag($this->recursivePropertyTag($method));
+                foreach (RecursiveMethod::cases() as $method) {
+                    $this->class->getDocBlock()->setTag($this->recursivePropertyTag($method->value));
                 }
                 if (!str_equal('parent_id', $column->column_name)) $this->class->addMethodFromGenerator($this->parentKeyMethod($column->column_name));
             }
@@ -92,8 +79,8 @@ trait HasLaravelProperties
     private function recursivePropertyTag($name)
     {
         return (new PropertyTag($name))
-            ->setTypes([model_name($this->table_name).(in_array($name, ['parent', 'rootAncestor']) ? '' : '[]')])
-            ->setDescription($this->recursiveMethods[$name]);
+            ->setTypes([model_name($this->table_name).(in_array($name, [RecursiveMethod::PARENT->value, RecursiveMethod::ROOT_ANCESTOR->value]) ? '' : '[]')])
+            ->setDescription(RecursiveMethod::tryFrom($name)?->description());
     }
 
     private function parentKeyMethod($column_name)

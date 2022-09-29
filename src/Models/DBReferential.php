@@ -3,6 +3,7 @@
 namespace Angujo\Lareloquent\Models;
 
 use Angujo\Lareloquent\Enums\Referential;
+use Closure;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -26,81 +27,73 @@ class DBReferential
     public string|null $through_ref_column_name;
     public string      $table_name;
     public string      $column_name;
-    public string      $other_columns = '';
     public string      $referenced_table_name;
     public string      $referenced_column_name;
+    /** @ignore */
+    // public string $other_columns = '';
 
     private Referential $ref;
     private ?string     $func_name  = null;
-    private ?\Closure   $name_check = null;
+    private ?Closure    $name_check = null;
 
     public function __construct(Referential $referential)
     {
         $this->ref = $referential;
     }
 
-    public function pivotColumns()
-    {
-        return empty($this->other_columns) ? [] : array_map('trim', explode(',', $this->other_columns));
-    }
-
     public function functionName()
+    : string
     {
         return $this->func_name ?? ($this->func_name = method_name($this->accessName()));
     }
 
+    public function setFunctionName(string $name)
+    : static
+    {
+        $this->func_name = method_name(
+            match ($this->ref) {
+                Referential::ONE2ONE, Referential::ONE_THROUGH,Referential::BELONGS_TO => in_singular($name),
+                default => in_plural($name)
+            });
+        return $this;
+    }
+
     private function accessName()
+    : string
     {
         switch ($this->ref) {
-            case Referential::ONETHROUGH:
+            case Referential::ONE_THROUGH:
                 return implode('_', [in_singular($this->fromColumnName(true)), in_singular($this->referenced_table_name)]);
-            case Referential::BELONGSTOMANY:
+            case Referential::BELONGS_TO_MANY:
                 return in_plural(preg_replace('/_id(\s+)?$/', '', $this->through_ref_column_name));
-            case Referential::BELONGSTO:
+            case Referential::BELONGS_TO:
                 return in_singular($this->fromColumnName());
             case Referential::ONE2MANY:
                 return in_plural((!str_equal($col_n = in_singular($this->fromColumnName(true)), in_singular($this->table_name))) ? implode('_', [$col_n, $this->referenced_table_name]) : $this->referenced_table_name);
             case Referential::ONE2ONE:
                 if (!str_equal($col_n = in_singular($this->fromColumnName(true)), in_singular($this->table_name))) return implode('_', [$col_n, in_singular($this->referenced_table_name)]);
                 return in_singular($this->referenced_table_name);
-            case Referential::MANYTHROUGH:
-            default:
-                return $this->referenced_table_name;
+            case Referential::MANY_THROUGH:
         }
+        return in_plural($this->referenced_table_name);
     }
 
     private function fromColumnName($ref = false)
+    : string
     {
         return col_name_reference($ref ? $this->referenced_column_name : $this->column_name);
     }
 
-    /**
-     * @param \Closure|null $name_check
-     *
-     * @return DBReferential
-     */
-    public function setNameCheck(?\Closure $name_check)
-    : DBReferential
-    {
-        $this->name_check = $name_check;
-        return $this;
-    }
-
-    private function fromTableName($ref = false)
-    {
-        return $ref ? $this->referenced_table_name : $this->table_name;
-    }
-
     public function getReturnClass()
+    : ?string
     {
         return match ($this->ref) {
             Referential::ONE2ONE => HasOne::class,
-            Referential::BELONGSTO => BelongsTo::class,
-            Referential::BELONGSTOMANY => BelongsToMany::class,
+            Referential::BELONGS_TO => BelongsTo::class,
+            Referential::BELONGS_TO_MANY => BelongsToMany::class,
             Referential::ONE2MANY => HasMany::class,
-            Referential::ONETHROUGH => HasOneThrough::class,
-            Referential::MANYTHROUGH => HasManyThrough::class,
-            default => null,
+            Referential::ONE_THROUGH => HasOneThrough::class,
+            Referential::MANY_THROUGH => HasManyThrough::class,
         };
     }
 
@@ -108,13 +101,13 @@ class DBReferential
     : ?string
     {
         return match ($this->ref) {
-            Referential::BELONGSTO, Referential::ONETHROUGH, Referential::ONE2ONE => model_name(in_singular($this->referenced_table_name)),
-            Referential::ONE2MANY, Referential::BELONGSTOMANY, Referential::MANYTHROUGH => model_name(in_plural($this->referenced_table_name)).'[]',
-            default => null,
+            Referential::BELONGS_TO, Referential::ONE_THROUGH, Referential::ONE2ONE => model_name(in_singular($this->referenced_table_name)),
+            Referential::ONE2MANY, Referential::BELONGS_TO_MANY, Referential::MANY_THROUGH => model_name(in_plural($this->referenced_table_name)).'[]',
         };
     }
 
     public function setUses()
+    : void
     {
         $this->addUse($this->getReturnClass());
     }
@@ -125,4 +118,14 @@ class DBReferential
         return (new PropertyTag($this->functionName()))
             ->setTypes($this->getDataTypeClass());
     }
+
+    /**
+     * @return Referential
+     */
+    public function getRef()
+    : Referential
+    {
+        return $this->ref;
+    }
+
 }

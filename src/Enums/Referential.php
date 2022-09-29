@@ -5,9 +5,9 @@ namespace Angujo\Lareloquent\Enums;
 enum Referential
 {
     case ONE2ONE;
-    case BELONGSTO;
-    case BELONGSTOMANY;
+    case BELONGS_TO;
+    case BELONGS_TO_MANY;
     case ONE2MANY;
-    case ONETHROUGH;
-    case MANYTHROUGH;
+    case ONE_THROUGH;
+    case MANY_THROUGH;
 }
