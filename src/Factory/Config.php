@@ -95,10 +95,10 @@ class Config
             $this->configs[$key] = 'Base';
         }
         if (str_equal($key, 'eloquent_extension_dir') && (!isset($this->configs[$key]) || empty($this->configs[$key]))) {
-            $this->configs[$key] = 'Extensions';// str_rand(10, numbers: false, special_xters: false);
+            $this->configs[$key] = 'Extensions';
         }
         if (str_equal($key, 'primary_key_name') && (!isset($this->configs[$key]) || empty($this->configs[$key]))) {
-            $this->configs[$key] = 'id';// str_rand(10, numbers: false, special_xters: false);
+            $this->configs[$key] = 'id';
         }
         return $this->configs[$key] ?? null;
     }

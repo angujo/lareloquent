@@ -10,6 +10,7 @@ namespace Angujo\Lareloquent {
 
     if (!function_exists('flatten_array')) {
         function flatten_array(array $items, array $flattened = [])
+        : array
         {
             foreach ($items as $item) {
                 if (is_array($item)) {
@@ -48,6 +49,14 @@ namespace Angujo\Lareloquent {
         }
     }
 
+    if (!function_exists('number_hash')) {
+        function number_hash(string $str, int $base = 10)
+        : string
+        {
+            return (unpack("L", hash('sha256', $str, true)) [1] % $base) + 1; // get 1 - 10 value
+        }
+    }
+
     if (!function_exists('method_name')) {
         function method_name(string $txt)
         : string
@@ -55,7 +64,7 @@ namespace Angujo\Lareloquent {
             return preg_replace_callback('/^([a-zA-Z])/',
                 function($matches){ return strtolower($matches[1]); },
                                          preg_replace_callback(
-                                             '/(^|[^A-Za-z\d])([a-zA-Z])([A-Z]+|[a-z\d]+)/',
+                                             '/(^|[^A-Za-z\d])([a-zA-Z\d])([A-Z]+|[a-z\d]+)/',
                                              function($matches){ return strtoupper($matches[2]).strtolower($matches[3]); },
                                              $txt));
         }

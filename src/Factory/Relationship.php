@@ -17,7 +17,7 @@ use Laminas\Code\Generator\TraitGenerator;
 use function Angujo\Lareloquent\in_plural;
 use function Angujo\Lareloquent\method_name;
 use function Angujo\Lareloquent\model_name;
-use function Angujo\Lareloquent\str_rand;
+use function Angujo\Lareloquent\number_hash;
 
 class Relationship
 {
@@ -145,7 +145,7 @@ class Relationship
         if ($class->hasMethod($method->getName())) {
             $ret  = basename($referential->getReturnClass());
             $cl   = basename($m->path);
-            $name = method_name($method->getName().'_'.str_rand(length: 10, upper: false, numbers: false, special_xters: false));
+            $name = method_name(self::newMethodName($method->getName(), $class));
             $class->getDocBlock()->setTag(GeneralTag::fromContent('skipped', "$name $cl $ret"));
             $method->setName($name)
                    ->setFlags(AbstractMemberGenerator::FLAG_PROTECTED)
@@ -157,5 +157,11 @@ class Relationship
             $class->addUse($use);
         }
         $class->addMethodFromGenerator($method);
+    }
+
+    private static function newMethodName(string $curr, ClassGenerator|TraitGenerator $class)
+    : string
+    {
+        return $class->hasMethod($name = method_name($curr.number_hash($curr))) ? self::newMethodName($name, $class) : $name;
     }
 }
