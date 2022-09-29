@@ -6,7 +6,6 @@ use Angujo\Lareloquent\Enums\DataType;
 use Angujo\Lareloquent\Enums\RecursiveMethod;
 use Angujo\Lareloquent\Factory\ColumnEnum;
 use Angujo\Lareloquent\Factory\TraitModel;
-use Angujo\Lareloquent\Factory\ValueCast;
 use Angujo\Lareloquent\LarEloquent;
 use Angujo\Lareloquent\Models\DBColumn;
 use Carbon\Carbon;

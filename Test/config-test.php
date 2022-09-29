@@ -50,7 +50,7 @@ return
         /*
          * Set the date format for DB, serialization in array or json
          */
-        'date_format'            => 'Y-M-d HH:i:s',
+        'date_format'            => 'Y-m-d H:i:s',
         /*
          * Allow defining scopes for various models.
          * This will add abstract scope methods to be implemented as well as set method doc for easy coding.
