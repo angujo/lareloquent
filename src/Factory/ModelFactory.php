@@ -43,7 +43,7 @@ class ModelFactory extends FileCreator
 
     private function definitionMethod()
     {
-        $columns = array_column(array_filter($this->columns, fn(DBColumn $col) => !$col->increments), 'column_name');
+        $columns = array_column(array_filter($this->columns, fn(DBColumn $col) => !$col->increments && !($col->isCreatedColumn() || $col->isDeletedColumn() || $col->isUpdatedColumn())), 'column_name');
         return (new MethodGenerator('definition'))
             ->setBody('return '.(new ValueGenerator(array_combine($columns, array_map(fn() => null, $columns))))->generate().';')
             ->setDocBlock((new DocBlockGenerator('Define the model\'s default state.'))->setTag(new ReturnTag('array')));
