@@ -15,7 +15,6 @@ use Laminas\Code\Generator\DocBlockGenerator;
 use Laminas\Code\Generator\MethodGenerator;
 use Laminas\Code\Generator\PropertyGenerator;
 use Laminas\Code\Generator\ValueGenerator;
-use function Angujo\Lareloquent\flatten_array;
 use function Angujo\Lareloquent\model_name;
 use function Angujo\Lareloquent\str_equal;
 

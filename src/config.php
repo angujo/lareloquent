@@ -1,6 +1,5 @@
 <?php
 
-use Angujo\Lareloquent\Path;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User;
 

@@ -3,7 +3,6 @@
 namespace Angujo\Lareloquent\Enums;
 
 use Angujo\Lareloquent\Traits\BaseEnumTrait;
-use function Angujo\Lareloquent\str_equal;
 
 enum DataType: string
 {

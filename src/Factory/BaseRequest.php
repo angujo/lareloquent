@@ -2,25 +2,15 @@
 
 namespace Angujo\Lareloquent\Factory;
 
-use Angujo\Lareloquent\Enums\DataType;
 use Angujo\Lareloquent\LarEloquent;
-use Angujo\Lareloquent\Models\DBColumn;
-use Angujo\Lareloquent\Models\DBTable;
 use Angujo\Lareloquent\Models\GeneralTag;
 use Angujo\Lareloquent\Path;
 use Illuminate\Foundation\Http\FormRequest;
-use Laminas\Code\Generator\ClassGenerator;
 use Laminas\Code\Generator\DocBlock\Tag\LicenseTag;
 use Laminas\Code\Generator\DocBlockGenerator;
-use Laminas\Code\Generator\FileGenerator;
 use Laminas\Code\Generator\MethodGenerator;
 use Laminas\Code\Generator\ValueGenerator;
-use function Angujo\Lareloquent\flatten_array;
-use function Angujo\Lareloquent\method_name;
-use function Angujo\Lareloquent\model_file;
 use function Angujo\Lareloquent\model_name;
-use function Angujo\Lareloquent\str_equal;
-use function Angujo\Lareloquent\tag;
 
 class BaseRequest extends FileCreator
 {

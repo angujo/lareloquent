@@ -5,14 +5,12 @@ namespace Angujo\Lareloquent\Factory;
 use Angujo\Lareloquent\LarEloquent;
 use Angujo\Lareloquent\Models\DBColumn;
 use Angujo\Lareloquent\Models\DBTable;
-use Angujo\Lareloquent\Path;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Laminas\Code\Generator\DocBlock\Tag\ReturnTag;
 use Laminas\Code\Generator\DocBlock\Tag\VarTag;
 use Laminas\Code\Generator\DocBlockGenerator;
 use Laminas\Code\Generator\MethodGenerator;
 use Laminas\Code\Generator\PropertyGenerator;
-use Laminas\Code\Generator\PropertyValueGenerator;
 use Laminas\Code\Generator\ValueGenerator;
 use function Angujo\Lareloquent\model_name;
 
@@ -45,8 +43,9 @@ class ModelFactory extends FileCreator
 
     private function definitionMethod()
     {
+        $columns = array_column(array_filter($this->columns, fn(DBColumn $col) => !$col->increments), 'column_name');
         return (new MethodGenerator('definition'))
-            ->setBody('return '.(new ValueGenerator(array_combine(array_map(fn(DBColumn $column) => $column->column_name, $this->columns), array_map(fn() => null, $this->columns))))->generate().';')
+            ->setBody('return '.(new ValueGenerator(array_combine($columns, array_map(fn() => null, $columns))))->generate().';')
             ->setDocBlock((new DocBlockGenerator('Define the model\'s default state.'))->setTag(new ReturnTag('array')));
     }
 

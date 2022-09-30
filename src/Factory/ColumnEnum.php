@@ -8,7 +8,6 @@ use Angujo\Lareloquent\Path;
 use Laminas\Code\Generator\EnumGenerator\EnumGenerator;
 use Laminas\Code\Generator\FileGenerator;
 use function Angujo\Lareloquent\model_file;
-use function Angujo\Lareloquent\model_name;
 use function Angujo\Lareloquent\str_equal;
 
 class ColumnEnum

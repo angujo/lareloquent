@@ -3,17 +3,12 @@
 namespace Angujo\Lareloquent\Factory;
 
 use Angujo\Lareloquent\LarEloquent;
-use Angujo\Lareloquent\Models\DBColumn;
 use Angujo\Lareloquent\Models\DBTable;
 use Angujo\Lareloquent\Models\GeneralTag;
-use Angujo\Lareloquent\Path;
-use Illuminate\Http\Resources\Json\JsonResource;
 use Laminas\Code\Generator\DocBlock\Tag\ParamTag;
 use Laminas\Code\Generator\DocBlock\Tag\ReturnTag;
 use Laminas\Code\Generator\DocBlockGenerator;
 use Laminas\Code\Generator\MethodGenerator;
-use Laminas\Code\Generator\ParameterGenerator;
-use Laminas\Code\Generator\ValueGenerator;
 use function Angujo\Lareloquent\model_name;
 
 class WorkResource extends FileCreator

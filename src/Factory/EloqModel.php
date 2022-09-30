@@ -9,6 +9,7 @@ use Angujo\Lareloquent\Path;
 use Angujo\Lareloquent\Traits\HasLaravelProperties;
 use Angujo\Lareloquent\Traits\HasReferential;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Laminas\Code\Generator\DocBlock\Tag\ReturnTag;
 use Laminas\Code\Generator\DocBlockGenerator;
 use Laminas\Code\Generator\MethodGenerator;
@@ -51,8 +52,12 @@ abstract class EloqModel extends FileCreator
                 ->setBody('return '.basename($fact_class).'::new();')
                 ->setDocBlock(
                     (new DocBlockGenerator('Create a new factory instance for the '.basename(model_name($this->table_name)).' model.'))
-                        ->setTag(new ReturnTag(Factory::class)))
-        )->addUse($fact_class);
+                        ->setTag(new ReturnTag('Factory'))
+                ))
+                    ->addUse($fact_class)
+                    ->addUse(Factory::class)
+                    ->addUse(HasFactory::class)
+                    ->addTrait('HasFactory');
         return $this;
     }
 

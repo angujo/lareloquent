@@ -4,14 +4,12 @@ namespace Angujo\Lareloquent\Factory;
 
 use Angujo\Lareloquent\LarEloquent;
 use Angujo\Lareloquent\Models\DBTable;
-use Angujo\Lareloquent\Path;
 use Laminas\Code\Generator\DocBlock\Tag\ParamTag;
 use Laminas\Code\Generator\DocBlock\Tag\ReturnTag;
 use Laminas\Code\Generator\DocBlockGenerator;
 use Laminas\Code\Generator\MethodGenerator;
 use Laminas\Code\Generator\ParameterGenerator;
 use function Angujo\Lareloquent\method_name;
-use function Angujo\Lareloquent\model_file;
 use function Angujo\Lareloquent\model_name;
 
 class Observer extends FileCreator

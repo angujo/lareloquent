@@ -6,7 +6,6 @@ use Angujo\Lareloquent\LarEloquent;
 use Angujo\Lareloquent\Models\DBColumn;
 use Angujo\Lareloquent\Enums\SQLType;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
-use Illuminate\Database\Eloquent\Casts\AsStringable;
 use function Angujo\Lareloquent\str_equal;
 
 class ValueCast

@@ -3,8 +3,6 @@
 namespace Angujo\Lareloquent\Models;
 
 use Laminas\Code\Generator\AbstractGenerator;
-use Laminas\Code\Generator\DocBlock\Tag\LicenseTag;
-use Laminas\Code\Generator\DocBlock\Tag\ReturnTag;
 use Laminas\Code\Generator\DocBlock\Tag\TagInterface;
 use Laminas\Code\Generator\DocBlock\TagManager;
 use Laminas\Code\Reflection\DocBlock\Tag\TagInterface as ReflectionTagInterface;

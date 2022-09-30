@@ -6,8 +6,6 @@ include '../vendor/autoload.php';
 use Angujo\Lareloquent\Factory\DBConnection;
 use Angujo\Lareloquent\LarEloquent;
 use Angujo\Lareloquent\Models\DBTable;
-use function Angujo\Lareloquent\in_singular;
-use function Angujo\Lareloquent\model_name;
 
 defined('LARELOQ_TEST') || define('LARELOQ_TEST', true);
 
