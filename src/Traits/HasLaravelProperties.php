@@ -76,6 +76,8 @@ trait HasLaravelProperties
         return $this;
     }
 
+
+
     private function recursivePropertyTag($name)
     {
         return (new PropertyTag($name))

@@ -55,7 +55,7 @@ return
          * Tables can have a different name and easily determined.
          * Default: id
          */
-        'primary_key_name'            => 'id',
+        'primary_key_name'       => 'id',
         /*
          * Allow defining scopes for various models.
          * This will add abstract scope methods to be implemented as well as set method doc for easy coding.
@@ -144,6 +144,23 @@ return
          */
         'enum_namespace'         => 'App\Models\Enums',
         /*
+         * This creates model factories that can be used to seed DB during development
+         * @see https://laravel.com/docs/eloquent-factories
+         * Factories are not overwritten, any subsequent change will need to be manually added.
+         * By default value mapping is null and no relationship is considered.
+         * These should be done manually during development.
+         * To allow extending models, newFactory method will be overwritten and $model property added
+         */
+        'factories'       => true,
+        /*
+         * Namespace for the factories
+         */
+        'factories_namespace'    => 'Database\Factories',
+        /*
+         * Directory for the factories
+         */
+        'factories_dir'          => base_path('database'.DIRECTORY_SEPARATOR.'factories'),
+        /*
          * Enable to add @date on each Base Model every time it is run
          * If set to False, @date will be set on first instance
          */
@@ -189,7 +206,7 @@ return
          * @see https://github.com/staudenmeir/laravel-adjacency-list
          * To disable, set the array to empty
          */
-        'parent_columns'         => ['parent_id', ],
+        'parent_columns'         => ['parent_id',],
 
         /*
          * Tables to be excluded from model generation

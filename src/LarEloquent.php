@@ -6,6 +6,7 @@ use Angujo\Lareloquent\Factory\BaseRequest;
 use Angujo\Lareloquent\Factory\Config;
 use Angujo\Lareloquent\Factory\DBConnection;
 use Angujo\Lareloquent\Factory\Model;
+use Angujo\Lareloquent\Factory\ModelFactory;
 use Angujo\Lareloquent\Factory\Observer;
 use Angujo\Lareloquent\Factory\ProviderBoot;
 use Angujo\Lareloquent\Factory\Request;
@@ -53,6 +54,9 @@ class LarEloquent
                 if (LarEloquent::config()->requests) {
                     Request::Write($table, $model->columns);
                     WorkRequest::Write($table);
+                }
+                if (LarEloquent::config()->factories) {
+                    ModelFactory::Write($table, $model->columns);
                 }
             }
             if (LarEloquent::config()->resources) {

@@ -8,6 +8,10 @@ use Angujo\Lareloquent\Models\DBTable;
 use Angujo\Lareloquent\Path;
 use Angujo\Lareloquent\Traits\HasLaravelProperties;
 use Angujo\Lareloquent\Traits\HasReferential;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Laminas\Code\Generator\DocBlock\Tag\ReturnTag;
+use Laminas\Code\Generator\DocBlockGenerator;
+use Laminas\Code\Generator\MethodGenerator;
 use function Angujo\Lareloquent\model_name;
 
 abstract class EloqModel extends FileCreator
@@ -37,6 +41,21 @@ abstract class EloqModel extends FileCreator
         parent::__construct();
     }
 
+    protected function factoryMethod()
+    {
+        if (!LarEloquent::config()->factories) return $this;
+        $fact_class = implode('\\', [LarEloquent::config()->factories_namespace, model_name($this->table_name).'Factory']);
+        $this->class->addMethodFromGenerator(
+            (new MethodGenerator('newFactory'))
+                ->setStatic(true)
+                ->setBody('return '.basename($fact_class).'::new();')
+                ->setDocBlock(
+                    (new DocBlockGenerator('Create a new factory instance for the '.basename(model_name($this->table_name)).' model.'))
+                        ->setTag(new ReturnTag(Factory::class)))
+        )->addUse($fact_class);
+        return $this;
+    }
+
     public static function Write(DBConnection $connection, DBTable $table)
     : static
     {
@@ -51,6 +70,7 @@ abstract class EloqModel extends FileCreator
             ->date_format()
             ->attributes()
             ->typeCasts()
+            ->factoryMethod()
             ->localScopes()
             ->one2One()
             ->belongsTo()

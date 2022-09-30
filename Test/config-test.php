@@ -132,6 +132,11 @@ return
          * Namespace for the enums
          */
         'enum_namespace'         => 'Angujo\LareloqTest\Enums',
+        'factories'              => true,
+
+        'factories_namespace' => 'Angujo\LareloqTest\Factories',
+
+        'factories_dir'          => Path::Combine(ROOT_DIR, 'Test', 'output', 'Factories'),
         /*
          * Enable to add @date on each Base Model every time it is run
          * If set to False, @date will be set on first instance

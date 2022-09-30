@@ -26,7 +26,7 @@ class Observer extends FileCreator
         $this->table = $table;
         $this->name  = model_name(($this->table_name = model_name($this->table->name)).'_'.LarEloquent::config()->observer_suffix);
         $this->dir   = LarEloquent::config()->observers_dir;
-        parent::__construct(defined('LARELOQ_TEST'));
+        parent::__construct(false);
         $this->class->setNamespaceName(LarEloquent::config()->observer_namespace)
                     ->addUse($this->table_namespace = implode('\\', [LarEloquent::config()->namespace, $this->table_name]));
     }

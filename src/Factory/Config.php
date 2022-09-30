@@ -31,6 +31,9 @@ use function Angujo\Lareloquent\str_equal;
  * @property bool        $enums
  * @property string      $enums_dir
  * @property string      $enum_namespace
+ * @property bool        $factories
+ * @property string      $factories_dir
+ * @property string      $factories_namespace
  * @property bool        $requests
  * @property string      $requests_dir
  * @property string      $request_namespace

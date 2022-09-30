@@ -25,7 +25,7 @@ abstract class FileCreator
 
     public function __construct(bool $overwrites = true)
     {
-        $this->overwrites = $overwrites;
+        $this->overwrites = $overwrites ?: (defined('LARELOQ_TEST') && LARELOQ_TEST);
         $this->class      = new ClassGenerator($this->name);
         if (!empty($this->namespace)) $this->class->setNamespaceName($this->namespace);
         if (!empty($this->parent_class) && !is_a($this, TraitModel::class)) {
