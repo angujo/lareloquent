@@ -44,7 +44,7 @@ abstract class EloqModel extends FileCreator
 
     protected function factoryMethod()
     {
-        if (!LarEloquent::config()->factories) return $this;
+        if (!LarEloquent::config()->factories || is_a($this, TraitModel::class)) return $this;
         $fact_class = implode('\\', [LarEloquent::config()->factories_namespace, model_name($this->table_name).'Factory']);
         $this->class->addMethodFromGenerator(
             (new MethodGenerator('newFactory'))
