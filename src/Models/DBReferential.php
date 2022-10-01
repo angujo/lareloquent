@@ -52,7 +52,7 @@ class DBReferential
     {
         $this->func_name = method_name(
             match ($this->ref) {
-                Referential::ONE2ONE, Referential::ONE_THROUGH,Referential::BELONGS_TO => in_singular($name),
+                Referential::ONE2ONE, Referential::ONE_THROUGH, Referential::BELONGS_TO => in_singular($name),
                 default => in_plural($name)
             });
         return $this;

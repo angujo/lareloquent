@@ -111,9 +111,10 @@ namespace Angujo\Lareloquent {
         : string
         {
             $infl = new Inflector();
-            return preg_replace_callback('/([^a-z])(.*?)$/', function($matches) use ($infl){
-                return $matches[1].($infl->isSingular($matches[2]) ? $matches[2] : $infl->singular($matches[2]));
-            },                           $word);
+            return !preg_match('/([^a-z])(.*?)$/', $word) ? $infl->singular($word) :
+                preg_replace_callback('/([^a-z])(.*?)$/', function($matches) use ($infl){
+                    return $matches[1].($infl->isSingular($matches[2]) ? $matches[2] : $infl->singular($matches[2]));
+                },                    $word);
         }
     }
 
@@ -122,9 +123,10 @@ namespace Angujo\Lareloquent {
         : string
         {
             $infl = new Inflector();
-            return preg_replace_callback('/([^a-z])(.*?)$/', function($matches) use ($infl, $count){
-                return $matches[1].($infl->isPlural($matches[2]) ? $matches[2] : $infl->pluralize($matches[2], $count));
-            },                           $word);
+            return !preg_match('/([^a-z])(.*?)$/', $word) ? $infl->pluralize($word, $count) :
+                preg_replace_callback('/([^a-z])(.*?)$/', function($matches) use ($infl, $count){
+                    return $matches[1].($infl->isPlural($matches[2]) ? $matches[2] : $infl->pluralize($matches[2], $count));
+                },                    $word);
         }
     }
 
