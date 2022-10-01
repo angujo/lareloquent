@@ -18,8 +18,6 @@ use function Angujo\Lareloquent\str_equal;
 
 class DBColumn
 {
-    use HasUsage, HasTraits;
-
     public string      $table_name;
     public string      $column_name;
     public string|null $referenced_table_name;
@@ -270,23 +268,6 @@ class DBColumn
     {
         if (!is_string($match)) return false;
         return str_equal($match, $this->data_type) || (str_equal('string', $match) && str_equal($this->data_type, SQLType::VARCHAR->value));
-    }
-
-    protected function setTraits()
-    {
-        if ($this->isDeletedColumn()) $this->addTrait(basename(SoftDeletes::class));
-    }
-
-    protected function setUses()
-    {
-        switch ($this->data_type) {
-            case SQLType::DATETIME->value:
-            case SQLType::TIMESTAMP->value:
-                $this->addUse(Carbon::class);
-                break;
-        }
-
-        if ($this->isDeletedColumn()) $this->addUse(SoftDeletes::class);
     }
 
     public function maxValue()

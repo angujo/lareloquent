@@ -123,7 +123,7 @@ namespace Angujo\Lareloquent {
         : string
         {
             $infl = new Inflector();
-            return !preg_match('/([^a-z])(.*?)$/', $word) ? $infl->pluralize($word, $count) :
+            return !preg_match('/([^a-z])(.*?)$/', $word) && !$infl->isPlural($word) ? $infl->pluralize($word, $count) :
                 preg_replace_callback('/([^a-z])(.*?)$/', function($matches) use ($infl, $count){
                     return $matches[1].($infl->isPlural($matches[2]) ? $matches[2] : $infl->pluralize($matches[2], $count));
                 },                    $word);

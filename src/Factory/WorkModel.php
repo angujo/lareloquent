@@ -4,13 +4,11 @@ namespace Angujo\Lareloquent\Factory;
 
 use Angujo\Lareloquent\LarEloquent;
 use Angujo\Lareloquent\Models\DBTable;
-use Angujo\Lareloquent\Models\HasUsage;
 use Laminas\Code\Generator\DocBlockGenerator;
 use function Angujo\Lareloquent\model_name;
 
 class WorkModel extends FileCreator
 {
-    use HasUsage;
 
     private DBTable $table;
 

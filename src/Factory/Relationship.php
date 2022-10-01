@@ -8,6 +8,7 @@ use Angujo\Lareloquent\LarEloquent;
 use Angujo\Lareloquent\Models\DBReferential;
 use Angujo\Lareloquent\Models\GeneralTag;
 use Exception;
+use Illuminate\Database\Eloquent\Collection;
 use Laminas\Code\Generator\AbstractMemberGenerator;
 use Laminas\Code\Generator\ClassGenerator;
 use Laminas\Code\Generator\DocBlock\Tag\PropertyTag;
@@ -49,7 +50,7 @@ class Relationship
     public function getUses()
     : array
     {
-        return array_filter([$this->referential->getReturnClass(), $this->path]);
+        return array_filter([$this->referential->getReturnClass(), $this->path, $this->referential->isCollection() ? Collection::class : null]);
     }
 
     public function getTagProperty()

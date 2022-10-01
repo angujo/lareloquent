@@ -10,6 +10,7 @@ use Angujo\Lareloquent\Models\DBReferential;
 use Angujo\Lareloquent\Models\GeneralTag;
 use Angujo\Lareloquent\Models\Polymorphic;
 use Exception;
+use Illuminate\Database\Eloquent\Collection;
 use Laminas\Code\Generator\DocBlockGenerator;
 use Laminas\Code\Generator\MethodGenerator;
 use function Angujo\Lareloquent\in_plural;
@@ -142,6 +143,7 @@ trait HasReferential
             $this->class->addMethodFromGenerator($this->morphManyMethod($polymorphic))
                         ->addUse($polymorphic->getMorphManyClass())
                         ->addUse(LarEloquent::config()->namespace.'\\'.model_name($polymorphic->table_name))
+                        ->addUse(Collection::class)
                         ->getDocBlock()->setTag($polymorphic->getManyDocProperty());
         }
         return $this;

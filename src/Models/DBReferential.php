@@ -20,8 +20,6 @@ use function Angujo\Lareloquent\str_equal;
 
 class DBReferential
 {
-    use HasUsage;
-
     public string|null $through_table_name;
     public string|null $through_column_name;
     public string|null $through_ref_column_name;
@@ -98,18 +96,14 @@ class DBReferential
     }
 
     public function getDataTypeClass()
-    : ?string
+    : array|string
     {
-        return match ($this->ref) {
-            Referential::BELONGS_TO, Referential::ONE_THROUGH, Referential::ONE2ONE => model_name(in_singular($this->referenced_table_name)),
-            Referential::ONE2MANY, Referential::BELONGS_TO_MANY, Referential::MANY_THROUGH => model_name(in_plural($this->referenced_table_name)).'[]',
-        };
+        return $this->isCollection() ? [model_name(in_plural($this->referenced_table_name)).'[]', 'Collection'] : model_name(in_singular($this->referenced_table_name));
     }
 
-    public function setUses()
-    : void
+    public function isCollection()
     {
-        $this->addUse($this->getReturnClass());
+        return in_array($this->ref, [Referential::ONE2MANY, Referential::BELONGS_TO_MANY, Referential::MANY_THROUGH]);
     }
 
     public function getTagDocProperty()

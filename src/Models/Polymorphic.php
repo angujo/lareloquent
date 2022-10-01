@@ -75,6 +75,6 @@ class Polymorphic
     public function getManyDocProperty()
     {
         return (new PropertyTag(method_name(in_plural($this->table_name))))
-            ->setTypes(model_name($this->table_name).'[]');
+            ->setTypes([model_name($this->table_name).'[]', 'Collection']);
     }
 }

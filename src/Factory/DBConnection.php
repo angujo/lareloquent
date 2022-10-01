@@ -114,7 +114,6 @@ class DBConnection
                 if (!property_exists($col, strtolower($array_key))) continue;
                 $col->{strtolower($array_key)} = $row[$array_key];
             }
-            LarEloquent::addUsage($tbl_name, ...$col->GetUses());
             yield $col;
         }
     }

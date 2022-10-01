@@ -22,7 +22,6 @@ class LarEloquent
     const LM_APP_NAME = 'lareloquent';
 
     private static Config|null $_conf      = null;
-    private static             $uses       = [];
     private static             $excludes   = [];
     private static             $only       = [];
     private static             $valid_tbls = false;
@@ -71,17 +70,6 @@ class LarEloquent
     : Config
     {
         return self::$_conf ?? (self::$_conf = new Config());
-    }
-
-    public static function addUsage($tbl_name, ...$usage)
-    {
-        if (!isset(self::$uses[$tbl_name])) self::$uses[$tbl_name] = [];
-        self::$uses[$tbl_name] = [...self::$uses[$tbl_name], ...$usage];
-    }
-
-    public static function getUsages($tbl_name)
-    {
-        return self::$uses[$tbl_name] ?? [];
     }
 
     public static function validTable($tbl_name)
