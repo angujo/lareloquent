@@ -132,7 +132,7 @@ trait HasReferential
             ->setShortDescription("Get ".model_name(in_plural($polymorphic->table_name))." associated with the ".model_name($this->table->name));
         return (new MethodGenerator($polymorphic->manyName()))
             ->setDocBlock($doc)
-            ->setBody("return \$this->morphMany(".model_name($polymorphic->table_name)."::class, '{$polymorphic->toName()}');");
+            ->setBody("return \$this->morphMany(".model_name($polymorphic->table_name)."::class, '{$polymorphic->morph_name}');");
     }
 
     public function morphMany()
