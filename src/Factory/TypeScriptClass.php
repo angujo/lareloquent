@@ -43,7 +43,8 @@ class TypeScriptClass extends FileWriter
         $this->template = preg_replace('/\{properties\}/',
                                        implode("\n\t", array_map(function(DBColumn $column){
                                            if ($column->isEnum()) $this->imports[] = $column->getEnum()->getName();
-                                           return $column->tsPropertyName().': '.$column->tsTypeValue().';';
+                                           return $column->tsPropertyName().': '.$column->tsTypeValue().
+                                               (null == $column->tsValue() ? '' :' = '. $column->tsValue()).';';
                                        }, $this->model->columns)),
                                        $this->template);
         return $this;

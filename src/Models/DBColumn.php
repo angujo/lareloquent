@@ -128,6 +128,7 @@ class DBColumn extends DBInterface
 
     public function defaultValue()
     {
+        if (is_null($this->column_default)) return null;
         return match ($this->PhpDataType()) {
             DataType::DATETIME => str_contains(strtoupper($this->column_default), 'CURRENT_TIMESTAMP') ? null : $this->column_default,
             DataType::BOOL => (bool)$this->column_default,
@@ -203,14 +204,30 @@ class DBColumn extends DBInterface
     {
         return match ($this->tsDataType()) {
             TSType::TUPLE, TSType::ARRAY => 'Array<any>',
-            TSType::ENUM => $this->getEnum()->getName(),
+            TSType::ENUM => $this->getEnum()->case(),
             default => $this->tsDataType()->value,
         };
     }
 
     public function tsPropertyName()
     {
-        return $this->column_name.($this->is_nullable ? '?' : '');
+        return $this->column_name.($this->is_nullable || $this->increments ? '?' : '');
+    }
+
+    public function tsValue()
+    {
+        if ($this->increments || $this->is_nullable || ($this->isEnum() && $this->getEnum()->is_nullable)) return null;
+        $def = $this->defaultValue();
+        if (!is_null($def)) return var_export($def, true);
+        return match ($this->tsDataType()) {
+            TSType::STRING => "''",
+            TSType::NUMBER => 0,
+            TSType::TUPLE, TSType::ARRAY => '[]',
+            TSType::BOOLEAN => 'false',
+            TSType::ENUM => $this->getEnum()->case(),
+            TSType::DATE => 'new Date',
+            default => null,
+        };
     }
 
     public function isMacAddress()

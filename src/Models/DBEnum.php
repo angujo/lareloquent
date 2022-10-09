@@ -21,6 +21,12 @@ class DBEnum extends DBInterface
         return $this->cases = (JSON_ERROR_NONE != json_last_error() ? [] : array_combine(array_map('Angujo\Lareloquent\enum_case', $values), $values));
     }
 
+    public function case()
+    {
+        if (empty($this->cases())) return null;
+        return array_values($this->cases)[0];
+    }
+
     public function tsValue()
     {
         return implode(' | ', array_map(fn($v) => "'$v'", array_filter(array_merge($this->cases(), [$this->is_nullable ? 'null' : '']))));
