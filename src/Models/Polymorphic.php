@@ -11,7 +11,7 @@ use function Angujo\Lareloquent\method_name;
 use function Angujo\Lareloquent\model_name;
 use function Angujo\Lareloquent\str_equal;
 
-class Polymorphic
+class Polymorphic extends DBInterface
 {
     public string $morph_name;
     public string $table_name;

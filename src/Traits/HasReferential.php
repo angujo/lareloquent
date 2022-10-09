@@ -18,86 +18,20 @@ use function Angujo\Lareloquent\model_name;
 
 trait HasReferential
 {
-
-
-    /**
-     * @throws Exception
-     */
-    public function one2One()
-    : static
+    public function parseReferential()
     {
-        /** @var DBReferential $referential */
-        foreach ($this->connection->one2One($this->table->name) as $referential) {
+        $this->referentials =
+            iterator_to_array($this->connection->one2One($this->table->name))
+            + iterator_to_array($this->connection->BelongsTo($this->table->name))
+            + iterator_to_array($this->connection->belongsToMany($this->table->name))
+            + iterator_to_array($this->connection->one2Many($this->table->name))
+            + iterator_to_array($this->connection->oneThrough($this->table->name))
+            + iterator_to_array($this->connection->manyThrough($this->table->name));
+        foreach ($this->referentials as $referential) {
             Relationship::loadMethod($this->class, $referential);
         }
         return $this;
     }
-
-    /**
-     * @throws Exception
-     */
-    public function belongsTo()
-    : static
-    {
-        /** @var DBReferential $referential */
-        foreach ($this->connection->BelongsTo($this->table->name) as $referential) {
-            Relationship::loadMethod($this->class, $referential);
-        }
-        return $this;
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function belongsToMany()
-    : static
-    {
-        /** @var DBReferential $referential */
-        foreach ($this->connection->belongsToMany($this->table->name) as $referential) {
-            Relationship::loadMethod($this->class, $referential);
-        }
-        return $this;
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function one2Many()
-    : static
-    {
-        /** @var DBReferential $referential */
-        foreach ($this->connection->One2Many($this->table->name) as $referential) {
-            Relationship::loadMethod($this->class, $referential);
-        }
-        return $this;
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function oneThrough()
-    : static
-    {
-        /** @var DBReferential $referential */
-        foreach ($this->connection->oneThrough($this->table->name) as $referential) {
-            Relationship::loadMethod($this->class, $referential);
-        }
-        return $this;
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function manyThrough()
-    : static
-    {
-        /** @var DBReferential $referential */
-        foreach ($this->connection->manyThrough($this->table->name) as $referential) {
-            Relationship::loadMethod($this->class, $referential);
-        }
-        return $this;
-    }
-
     private function morphToMethod(Polymorphic $polymorphic)
     : MethodGenerator
     {

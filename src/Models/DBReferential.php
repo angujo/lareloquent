@@ -16,9 +16,10 @@ use function Angujo\Lareloquent\in_plural;
 use function Angujo\Lareloquent\in_singular;
 use function Angujo\Lareloquent\method_name;
 use function Angujo\Lareloquent\model_name;
+use function Angujo\Lareloquent\snake_case;
 use function Angujo\Lareloquent\str_equal;
 
-class DBReferential
+class DBReferential extends DBInterface
 {
     public string|null $through_table_name;
     public string|null $through_column_name;
@@ -27,6 +28,7 @@ class DBReferential
     public string      $column_name;
     public string      $referenced_table_name;
     public string      $referenced_column_name;
+    public bool        $is_ignored = false;
     /** @ignore */
     // public string $other_columns = '';
 
@@ -120,6 +122,23 @@ class DBReferential
     : Referential
     {
         return $this->ref;
+    }
+
+    public function tsReference()
+    {
+        return model_name($this->referenced_table_name);
+    }
+
+    public function tsPropertyName()
+    : string
+    {
+        return snake_case($this->functionName()).'?';
+    }
+
+    public function tsTypeValue()
+    : string
+    {
+        return $this->isCollection() ? implode('', ['Array<', $this->tsReference(), '>']) : $this->tsReference();
     }
 
 }

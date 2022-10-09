@@ -2,6 +2,8 @@
 
 namespace Angujo\Lareloquent\Enums;
 
+use function Angujo\Lareloquent\snake_case;
+
 enum RecursiveMethod: string
 {
     case ANCESTORS = 'ancestors';
@@ -34,5 +36,26 @@ enum RecursiveMethod: string
             self::SIBLINGS => 'The parent\'s other children.',
             self::SIBLINGS_SELF => 'All the parent\'s children.',
         };
+    }
+
+    public function isCollection()
+    : bool
+    {
+        return match ($this) {
+            RecursiveMethod::PARENT, RecursiveMethod::ROOT_ANCESTOR => false,
+            default => true,
+        };
+    }
+
+    public function tsPropertyName()
+    : string
+    {
+        return snake_case($this->value).'?';
+    }
+
+    public function tsTypeValue(string $model_name)
+    : string
+    {
+        return $this->isCollection() ? implode('', ['Array<', $model_name, '>']) : $model_name;
     }
 }

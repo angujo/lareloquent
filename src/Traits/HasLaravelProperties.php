@@ -38,8 +38,7 @@ trait HasLaravelProperties
         foreach ($this->columns as $column) {
             if (DataType::DATETIME == $column->PhpDataType()) $this->class->addUse(Carbon::class);
             if ($column->isEnum()) {
-                ColumnEnum::Write($column);
-                $this->class->addUse($column->enumClass());
+                $this->class->addUse($column->getEnum()?->className());
             }
             $this->class->getDocBlock()->setTag($column->docPropertyTag());
             if (!isset($this->primaryCol) && ($column->is_primary || ($this->table->is_view && str_equal(LarEloquent::config()->primary_key_name, $column->column_name)))) $this->primaryCol = $column;
@@ -53,11 +52,12 @@ trait HasLaravelProperties
                 }
             }
             if ($column->isParentColumn()) {
+                $this->has_recursives = true;
                 $this->class->addUse(HasRecursiveRelationships::class)
                             ->addTrait('HasRecursiveRelationships')
                             ->addUse(implode('\\', [LarEloquent::config()->namespace, model_name($this->table_name)]));
                 foreach (RecursiveMethod::cases() as $method) {
-                    $this->class->getDocBlock()->setTag($this->recursivePropertyTag($method->value));
+                    $this->class->getDocBlock()->setTag($this->recursivePropertyTag($method));
                 }
                 if (!str_equal('parent_id', $column->column_name)) $this->class->addMethodFromGenerator($this->parentKeyMethod($column->column_name));
             }
@@ -77,12 +77,11 @@ trait HasLaravelProperties
     }
 
 
-
-    private function recursivePropertyTag($name)
+    private function recursivePropertyTag(RecursiveMethod $method)
     {
-        return (new PropertyTag($name))
-            ->setTypes([model_name($this->table_name).(in_array($name, [RecursiveMethod::PARENT->value, RecursiveMethod::ROOT_ANCESTOR->value]) ? '' : '[]')])
-            ->setDescription(RecursiveMethod::tryFrom($name)?->description());
+        return (new PropertyTag($method->value))
+            ->setTypes([model_name($this->table_name).($method->isCollection() ? '[]' : '')])
+            ->setDescription($method->description());
     }
 
     private function parentKeyMethod($column_name)

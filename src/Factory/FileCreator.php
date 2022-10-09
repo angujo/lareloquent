@@ -10,16 +10,13 @@ use function Angujo\Lareloquent\model_file;
 use function Angujo\Lareloquent\model_name;
 use function Angujo\Lareloquent\str_equal;
 
-abstract class FileCreator
+abstract class FileCreator extends FileWriter
 {
-    protected string  $name;
     protected ?string $table_name;
     protected ?string $parent_class;
     protected string  $namespace;
-    protected string  $dir;
     /** @var ClassGenerator|TraitGenerator */
     protected TraitGenerator|ClassGenerator $class;
-    protected bool                          $overwrites = true;
 
     public function __construct(bool $overwrites = true)
     {
@@ -39,16 +36,5 @@ abstract class FileCreator
     : string
     {
         return (new FileGenerator())->setClass($this->class)->generate();
-    }
-
-
-    protected function _write(string $path = null)
-    : static
-    {
-        $path = $path ?? Path::Combine($this->dir, model_file($this->name));
-        if (!file_exists($dir = dirname($path))) mkdir($dir, 0755, true);
-        if (file_exists($path) && !$this->overwrites) return $this;
-        file_put_contents($path, $this.'');
-        return $this;
     }
 }

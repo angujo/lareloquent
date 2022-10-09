@@ -5,6 +5,7 @@ namespace Angujo\Lareloquent;
 use Angujo\Lareloquent\Factory\BaseRequest;
 use Angujo\Lareloquent\Factory\Config;
 use Angujo\Lareloquent\Factory\DBConnection;
+use Angujo\Lareloquent\Factory\Enumer;
 use Angujo\Lareloquent\Factory\Model;
 use Angujo\Lareloquent\Factory\ModelFactory;
 use Angujo\Lareloquent\Factory\Observer;
@@ -12,6 +13,7 @@ use Angujo\Lareloquent\Factory\ProviderBoot;
 use Angujo\Lareloquent\Factory\Request;
 use Angujo\Lareloquent\Factory\Resource;
 use Angujo\Lareloquent\Factory\TraitModel;
+use Angujo\Lareloquent\Factory\TypeScriptClass;
 use Angujo\Lareloquent\Factory\WorkModel;
 use Angujo\Lareloquent\Factory\WorkRequest;
 use Angujo\Lareloquent\Factory\WorkResource;
@@ -43,6 +45,7 @@ class LarEloquent
         if (LarEloquent::config()->requests) {
             BaseRequest::Write();
         }
+        Enumer::Write($this->connection);
         foreach ($this->connection->Tables() as $table) {
             if ($pre && is_callable($pre)) $pre($table);
             /** @var TraitModel|Model $model */
@@ -57,6 +60,9 @@ class LarEloquent
                 if (LarEloquent::config()->factories) {
                     ModelFactory::Write($table, $model->columns);
                 }
+            }
+            if (LarEloquent::config()->typescript) {
+                TypeScriptClass::Write($model);
             }
             if (LarEloquent::config()->resources) {
                 Resource::Write($table, $model->columns);

@@ -3,7 +3,9 @@
 namespace Angujo\Lareloquent\Models;
 
 use Angujo\Lareloquent\Enums\DataType;
+use Angujo\Lareloquent\Enums\TSType;
 use Angujo\Lareloquent\Factory\BaseRequest;
+use Angujo\Lareloquent\Factory\Enumer;
 use Angujo\Lareloquent\Factory\ValueCast;
 use Angujo\Lareloquent\LarEloquent;
 use Angujo\Lareloquent\Enums\SQLType;
@@ -16,7 +18,7 @@ use Laminas\Code\Generator\PropertyValueGenerator;
 use function Angujo\Lareloquent\model_name;
 use function Angujo\Lareloquent\str_equal;
 
-class DBColumn
+class DBColumn extends DBInterface
 {
     public string      $table_name;
     public string      $column_name;
@@ -64,9 +66,13 @@ class DBColumn
         return str_equal($this->data_type, SQLType::ENUM->value);
     }
 
-    public function enumClass()
+    /**
+     * @throws \Exception
+     */
+    public function getEnum()
+    : ?DBEnum
     {
-        return implode('\\', [LarEloquent::config()->enum_namespace, model_name($this->column_name)]);
+        return Enumer::getEnum($this->connection_name, $this->column_name);
     }
 
     public function constantName()
@@ -81,10 +87,9 @@ class DBColumn
 
     public function docPropertyTag()
     {
-
         if (!empty($this->cast()) && class_exists($this->cast())) {
             $types = [$this->cast()];
-        } else $types = [$this->isEnum() ? basename($this->enumClass()) : $this->dataType()];
+        } else $types = [$this->isEnum() ? $this->getEnum()->getName() : $this->dataType()];
         if ($this->is_nullable) $types[] = 'null';
         return (new PropertyTag($this->column_name))
             ->setTypes($types)
@@ -177,6 +182,35 @@ class DBColumn
             default:
                 return DataType::STRING;
         }
+    }
+
+    public function tsDataType()
+    : TSType
+    {
+        return match ($this->data_type) {
+            SQLType::TINYINT->value, SQLType::BOOL->value, SQLType::BOOLEAN->value => TSType::BOOLEAN,
+            SQLType::INT->value, SQLType::MEDIUMINT->value, SQLType::BIGINT->value, SQLType::SMALLINT->value, SQLType::YEAR->value, SQLType::FLOAT->value, SQLType::DOUBLE->value, SQLType::DECIMAL->value => TSType::NUMBER,
+            SQLType::JSON->value, SQLType::SET->value => TSType::ARRAY,
+            SQLType::TEXT->value, SQLType::MEDIUMTEXT->value, SQLType::CHAR->value, SQLType::VARCHAR->value, SQLType::LONGTEXT->value => TSType::STRING,
+            SQLType::ENUM->value => TSType::ENUM,
+            SQLType::DATETIME->value, SQLType::TIMESTAMP->value, SQLType::DATE->value => TSType::DATE,
+            default => TSType::ANY,
+        };
+    }
+
+    public function tsTypeValue()
+    : string
+    {
+        return match ($this->tsDataType()) {
+            TSType::TUPLE, TSType::ARRAY => 'Array<any>',
+            TSType::ENUM => $this->getEnum()->getName(),
+            default => $this->tsDataType()->value,
+        };
+    }
+
+    public function tsPropertyName()
+    {
+        return $this->column_name.($this->is_nullable ? '?' : '');
     }
 
     public function isMacAddress()

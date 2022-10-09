@@ -4,6 +4,7 @@ namespace Angujo\Lareloquent\Factory;
 
 use Angujo\Lareloquent\LarEloquent;
 use Angujo\Lareloquent\Models\DBColumn;
+use Angujo\Lareloquent\Models\DBEnum;
 use Angujo\Lareloquent\Models\DBReferential;
 use Angujo\Lareloquent\Models\DBTable;
 use Angujo\Lareloquent\Models\Polymorphic;
@@ -15,7 +16,7 @@ use ParagonIE\EasyDB\Factory;
 class DBConnection
 {
     public string  $name     = 'default';
-    public string $dbname   = 'mneapi';
+    public string  $dbname   = 'mneapi';
     private string $dbms     = 'mysql';
     private string $host     = 'localhost';
     private string $username = 'root';
@@ -43,7 +44,7 @@ class DBConnection
         $this->replacements = ['{db}'       => $this->dbname,
                                '{andwhere}' => '',
                                '{tbl}'      => '',
-                               '{pivots}'   => implode(', ', array_map(function($tbl){ return "'{$tbl}'"; }, LarEloquent::config()->pivot_tables??['[*UNKNOWN_TABLE_NAME*]']))];
+                               '{pivots}'   => implode(', ', array_map(function($tbl){ return "'{$tbl}'"; }, LarEloquent::config()->pivot_tables ?? ['[*UNKNOWN_TABLE_NAME*]']))];
         $this->excludes     = (!LarEloquent::config()->process_pivot_tables && isset(LarEloquent::config()->pivot_tables)) ? LarEloquent::config()->pivot_tables : [];
         if (isset(LarEloquent::config()->only_tables)) {
             $this->only = array_diff(LarEloquent::config()->only_tables, $this->excludes);
@@ -80,7 +81,8 @@ class DBConnection
     {
         $rows = $this->getDb()->run($this->replacedSql(__FUNCTION__, tbl_alias: 't'));
         foreach ($rows as $row) {
-            $tbl = new DBTable();
+            $tbl                  = new DBTable();
+            $tbl->connection_name = $this->name;
             foreach (array_keys($row) as $array_key) {
                 if (!property_exists($tbl, strtolower($array_key))) continue;
                 $tbl->{strtolower($array_key)} = $row[$array_key];
@@ -94,12 +96,28 @@ class DBConnection
     {
         $rows = $this->getDb()->run($this->replacedSql(__FUNCTION__));
         foreach ($rows as $row) {
-            $polymorphic = new Polymorphic();
+            $polymorphic                  = new Polymorphic();
+            $polymorphic->connection_name = $this->name;
             foreach (array_keys($row) as $array_key) {
                 if (!property_exists($polymorphic, strtolower($array_key))) continue;
                 $polymorphic->{strtolower($array_key)} = $row[$array_key];
             }
             yield $polymorphic;
+        }
+    }
+
+    public function enums()
+    : \Generator
+    {
+        $rows = $this->getDb()->run($this->replacedSql(__FUNCTION__));
+        foreach ($rows as $row) {
+            $enum                  = new DBEnum();
+            $enum->connection_name = $this->name;
+            foreach (array_keys($row) as $array_key) {
+                if (!property_exists($enum, strtolower($array_key))) continue;
+                $enum->{strtolower($array_key)} = $row[$array_key];
+            }
+            yield $enum;
         }
     }
 
@@ -109,7 +127,8 @@ class DBConnection
         if (!LarEloquent::validTable($tbl_name)) return;
         $rows = $this->getDb()->run($this->replacedSql(__FUNCTION__, $tbl_name, 'c'));
         foreach ($rows as $row) {
-            $col = new DBColumn();
+            $col                  = new DBColumn();
+            $col->connection_name = $this->name;
             foreach (array_keys($row) as $array_key) {
                 if (!property_exists($col, strtolower($array_key))) continue;
                 $col->{strtolower($array_key)} = $row[$array_key];
@@ -141,7 +160,7 @@ class DBConnection
         return $this->Referential($tbl_name, __FUNCTION__, Referential::BELONGS_TO_MANY);
     }
 
-    public function One2Many(string $tbl_name)
+    public function one2Many(string $tbl_name)
     : \Generator
     {
         return $this->Referential($tbl_name, __FUNCTION__, Referential::ONE2MANY);
@@ -165,7 +184,8 @@ class DBConnection
         if (!LarEloquent::validTable($tbl_name)) return;
         $rows = $this->getDb()->run($this->replacedSql($file_name, $tbl_name));
         foreach ($rows as $row) {
-            $ref = new DBReferential($referential);
+            $ref                  = new DBReferential($referential);
+            $ref->connection_name = $this->name;
             foreach (array_keys($row) as $array_key) {
                 if (!property_exists($ref, strtolower($array_key))) continue;
                 $ref->{strtolower($array_key)} = $row[$array_key];

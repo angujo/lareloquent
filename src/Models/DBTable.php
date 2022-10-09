@@ -2,7 +2,7 @@
 
 namespace Angujo\Lareloquent\Models;
 
-class DBTable
+class DBTable extends DBInterface
 {
     public string $name;
     public string $type;

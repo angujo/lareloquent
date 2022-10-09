@@ -5,6 +5,8 @@ namespace Angujo\Lareloquent\Enums;
 enum SQLType: string
 {
     case TINYINT = 'tinyint';
+    case BOOL = 'bool';
+    case BOOLEAN = 'boolean';
     case INT = 'int';
     case MEDIUMINT = 'mediumint';
     case BIGINT = 'bigint';

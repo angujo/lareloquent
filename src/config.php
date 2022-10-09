@@ -150,7 +150,7 @@ return
          * These should be done manually during development.
          * To allow extending models, newFactory method will be overwritten and $model property added
          */
-        'factories'       => true,
+        'factories'              => true,
         /*
          * Namespace for the factories
          */
@@ -307,4 +307,8 @@ return
          *      start_date Column comment "validation:{lte:end_date}"
          *      end_date Column comment "validation:{gte:start_date}"
          */
+
+        //--------------------------------------------------------TYPESCRIPT-------------------------------------------------
+        'typescript'             => false,
+        'typescript_dir'         => base_path('storage'.DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.'ts'),
     ];

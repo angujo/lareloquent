@@ -144,9 +144,10 @@ class Relationship
         $m      = new self($referential);
         $method = $m->getMethod();
         if ($class->hasMethod($method->getName())) {
-            $ret  = basename($referential->getReturnClass());
-            $cl   = basename($m->path);
-            $name = method_name(self::newMethodName($method->getName(), $class));
+            $referential->is_ignored = true;
+            $ret                     = basename($referential->getReturnClass());
+            $cl                      = basename($m->path);
+            $name                    = method_name(self::newMethodName($method->getName(), $class));
             $class->getDocBlock()->setTag(GeneralTag::fromContent('skipped', "$name $cl $ret"));
             $method->setName($name)
                    ->setFlags(AbstractMemberGenerator::FLAG_PROTECTED)

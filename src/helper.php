@@ -33,6 +33,14 @@ namespace Angujo\Lareloquent {
         }
     }
 
+    if (!function_exists('snake_case')) {
+        function snake_case(string $txt)
+        : string
+        {
+            return preg_replace_callback('/([^a-z\d])([a-z\d]+)/', function($matches){ return '_'.strtolower($matches[1]).strtolower($matches[2]); }, $txt);
+        }
+    }
+
     if (!function_exists('col_name_reference')) {
         function col_name_reference(string $txt)
         : string
@@ -91,10 +99,10 @@ namespace Angujo\Lareloquent {
     }
 
     if (!function_exists('model_file')) {
-        function model_file(string $txt, bool $base = false)
+        function model_file(string $txt, string|null $ext = 'php')
         : string
         {
-            return model_name(($base ? LarEloquent::config()->base_abstract_prefix.'_' : '').$txt).'.php';
+            return model_name($txt).'.'.($ext && is_string($ext) ? $ext : 'php');
         }
     }
 

@@ -4,6 +4,7 @@ namespace Angujo\Lareloquent\Factory;
 
 use Angujo\Lareloquent\LarEloquent;
 use Angujo\Lareloquent\Models\DBColumn;
+use Angujo\Lareloquent\Models\DBReferential;
 use Angujo\Lareloquent\Models\DBTable;
 use Angujo\Lareloquent\Path;
 use Angujo\Lareloquent\Traits\HasLaravelProperties;
@@ -24,11 +25,14 @@ abstract class EloqModel extends FileCreator
     private DBColumn $updatedCol;
     private DBColumn $deletedCol;
 
-    private DBTable      $table;
+    public DBTable       $table;
     private DBConnection $connection;
 
     /** @var array|DBColumn[] */
     public array $columns = [];
+    /** @var array|DBReferential[] */
+    public array $referentials   = [];
+    public bool  $has_recursives = false;
 
     public function __construct(DBTable $table, DBConnection $connection)
     {
@@ -77,12 +81,7 @@ abstract class EloqModel extends FileCreator
             ->typeCasts()
             ->factoryMethod()
             ->localScopes()
-            ->one2One()
-            ->belongsTo()
-            ->belongsToMany()
-            ->one2Many()
-            ->oneThrough()
-            ->manyThrough()
+            ->parseReferential()
             ->morphTo()
             ->morphMany()->_write();
     }

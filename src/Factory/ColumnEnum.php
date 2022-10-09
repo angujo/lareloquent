@@ -4,6 +4,7 @@ namespace Angujo\Lareloquent\Factory;
 
 use Angujo\Lareloquent\LarEloquent;
 use Angujo\Lareloquent\Models\DBColumn;
+use Angujo\Lareloquent\Models\DBEnum;
 use Angujo\Lareloquent\Path;
 use Laminas\Code\Generator\EnumGenerator\EnumGenerator;
 use Laminas\Code\Generator\FileGenerator;
@@ -12,33 +13,27 @@ use function Angujo\Lareloquent\str_equal;
 
 class ColumnEnum
 {
-    private               $values = [];
     private EnumGenerator $enum;
-    private string        $name;
-    private DBColumn      $column;
+    private DBEnum        $dbEnum;
 
-    private function __construct(DBColumn $column)
+    private function __construct(DBEnum $DBEnum)
     {
-        $this->column = $column;
-        $types        = preg_replace(['/^enum\((.*?)\)$/', '/\'/'], ['[$1]', '"'], $this->column->column_type);
-        $this->values = json_decode($types, false);
-        if (json_last_error() !== JSON_ERROR_NONE) throw new \Exception('Invalid enum content!');
-        $this->name = $this->column->enumClass();
-        $this->process($this->name);
+        $this->dbEnum = $DBEnum;
+        $this->process();
     }
 
-    public function process(string $target_class = null)
+    public function process()
     {
-        $cases = array_combine(array_map('Angujo\Lareloquent\enum_case', $this->values), $this->values);
-        if (!empty($target_class) && enum_exists($target_class)) {
-            $refl = new \ReflectionEnum($target_class);
+        $cases = $this->dbEnum->cases();
+        if (enum_exists($this->dbEnum->className())) {
+            $refl = new \ReflectionEnum($this->dbEnum->className());
             foreach ($refl->getCases() as $case) {
                 if (array_key_exists($case->getName(), $cases) && str_equal($case->getValue()->value, $cases[$case->getName()])) continue;
                 $cases[$case->getName()] = $case->getValue()->value;
             }
         }
         $this->enum = EnumGenerator::withConfig(
-            ['name'        => $this->name,
+            ['name'        => $this->dbEnum->className(),
              'backedCases' => ['type' => 'string', 'cases' => $cases]]);
     }
 
@@ -51,14 +46,14 @@ class ColumnEnum
     protected function _write()
     : static
     {
-        $path = $path ?? Path::Combine(LarEloquent::config()->enums_dir, model_file(basename($this->name)));
+        $path = $path ?? Path::Combine(LarEloquent::config()->enums_dir, model_file(basename($this->dbEnum->className())));
         if (!file_exists($dir = dirname($path))) mkdir($dir, 0755, true);
         file_put_contents($path, $this.'');
         return $this;
     }
 
-    public static function Write(DBColumn $column)
+    public static function Write(DBEnum $enum)
     {
-        (new self($column))->_write();
+        (new self($enum))->_write();
     }
 }

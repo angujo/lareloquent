@@ -30,6 +30,12 @@ class Morpher
         }
     }
 
+    private static function instance(DBConnection $connection)
+    : Morpher
+    {
+        return self::$mes[$connection->name] ?? (self::$mes[$connection->name] = new Morpher($connection));
+    }
+
     protected function isMorpher(string $tbl_name)
     {
         return array_key_exists($tbl_name, $this->morphs);
@@ -55,12 +61,6 @@ class Morpher
         return flatten_array(array_map(function($m) use ($tbl_name){
             return array_filter(array_map(function(Polymorphic $polymorphic) use ($tbl_name){ return $polymorphic->isReferenced($tbl_name) ? $polymorphic : null; }, $m));
         }, $this->morphs));
-    }
-
-    private static function instance(DBConnection $connection)
-    : Morpher
-    {
-        return self::$mes[$connection->name] ?? (self::$mes[$connection->name] = new Morpher($connection));
     }
 
     /**
