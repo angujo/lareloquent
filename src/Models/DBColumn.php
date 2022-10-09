@@ -204,7 +204,7 @@ class DBColumn extends DBInterface
     {
         return match ($this->tsDataType()) {
             TSType::TUPLE, TSType::ARRAY => 'Array<any>',
-            TSType::ENUM => $this->getEnum()->case(),
+            TSType::ENUM => $this->getEnum()->getName(),
             default => $this->tsDataType()->value,
         };
     }
@@ -224,7 +224,7 @@ class DBColumn extends DBInterface
             TSType::NUMBER => '0',
             TSType::TUPLE, TSType::ARRAY => '[]',
             TSType::BOOLEAN => 'false',
-            TSType::ENUM => $this->getEnum()->case(),
+            TSType::ENUM => var_export($this->getEnum()->case(), true),
             TSType::DATE => 'new Date',
             default => null,
         };
