@@ -20,18 +20,19 @@ trait HasReferential
 {
     public function parseReferential()
     {
-        $this->referentials =
-            iterator_to_array($this->connection->one2One($this->table->name))
-            + iterator_to_array($this->connection->BelongsTo($this->table->name))
-            + iterator_to_array($this->connection->belongsToMany($this->table->name))
-            + iterator_to_array($this->connection->one2Many($this->table->name))
-            + iterator_to_array($this->connection->oneThrough($this->table->name))
-            + iterator_to_array($this->connection->manyThrough($this->table->name));
+        $this->referentials = array_merge(
+              iterator_to_array($this->connection->one2One($this->table->name))
+            , iterator_to_array($this->connection->BelongsTo($this->table->name))
+            , iterator_to_array($this->connection->belongsToMany($this->table->name))
+            , iterator_to_array($this->connection->one2Many($this->table->name))
+            , iterator_to_array($this->connection->oneThrough($this->table->name))
+            , iterator_to_array($this->connection->manyThrough($this->table->name)));
         foreach ($this->referentials as $referential) {
             Relationship::loadMethod($this->class, $referential);
         }
         return $this;
     }
+
     private function morphToMethod(Polymorphic $polymorphic)
     : MethodGenerator
     {
