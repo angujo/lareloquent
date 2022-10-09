@@ -221,7 +221,7 @@ class DBColumn extends DBInterface
         if (!is_null($def)) return var_export($def, true);
         return match ($this->tsDataType()) {
             TSType::STRING => "''",
-            TSType::NUMBER => 0,
+            TSType::NUMBER => '0',
             TSType::TUPLE, TSType::ARRAY => '[]',
             TSType::BOOLEAN => 'false',
             TSType::ENUM => $this->getEnum()->case(),
