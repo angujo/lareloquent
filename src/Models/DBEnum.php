@@ -10,7 +10,7 @@ class DBEnum extends DBInterface
     public string $table_name;
     public string $column_name;
     public string $column_type;
-    public bool   $is_nullable;
+    public bool $is_nullable;
 
     private array $cases = [];
 
@@ -29,23 +29,25 @@ class DBEnum extends DBInterface
 
     public function tsValue()
     {
-        return implode(' | ', array_map(fn($v) => "'$v'", array_filter(array_merge($this->cases(), [$this->is_nullable ? 'null' : '']))));
+        return implode(' | ', array_map(fn($v) => "'$v'", $this->tsCases()));
     }
 
-    public function getName()
-    : string
+    public function tsCases(): array
+    {
+        return array_filter(array_merge($this->cases(), [$this->is_nullable ? 'null' : '']));
+    }
+
+    public function getName(): string
     {
         return basename($this->className());
     }
 
-    public function className()
-    : string
+    public function className(): string
     {
         return implode('\\', [LarEloquent::config()->enum_namespace, model_name($this->column_name)]);
     }
 
-    public function merge(...$entries)
-    : static
+    public function merge(...$entries): static
     {
         foreach ($entries as $entry) {
             if (!is_array($entry)) continue;
