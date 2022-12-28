@@ -22,22 +22,22 @@ class Request extends FileCreator
 {
     private DBTable $table;
     /** @var array|DBColumn[] */
-    private array  $columns;
+    private array $columns;
     private string $table_namespace;
 
-    private array     $rules         = [];
-    private array     $messages      = [];
+    private array $rules = [];
+    private array $messages = [];
     private ?DBColumn $primaryColumn = null;
 
     public function __construct(DBTable $table, array $columns)
     {
-        $this->columns         = $columns;
-        $this->table           = $table;
+        $this->columns = $columns;
+        $this->table = $table;
         $this->table_namespace = implode('\\', [LarEloquent::config()->namespace, $this->table_name = model_name($this->table->name)]);
-        $this->name            = model_name(LarEloquent::config()->base_request_prefix.'_'.$this->table_name.'_'.LarEloquent::config()->request_suffix);
-        $this->namespace       = implode('\\', [LarEloquent::config()->request_namespace, model_name(LarEloquent::config()->base_request_prefix)]);
-        $this->parent_class    = implode('\\', [LarEloquent::config()->request_namespace, model_name(LarEloquent::config()->base_request_prefix), model_name(LarEloquent::config()->base_request_prefix.'_'.LarEloquent::config()->request_suffix)]);
-        $this->dir             = Path::Combine(LarEloquent::config()->requests_dir, model_name(LarEloquent::config()->base_request_prefix));
+        $this->name = model_name(LarEloquent::config()->base_request_prefix . '_' . $this->table_name . '_' . LarEloquent::config()->request_suffix);
+        $this->namespace = implode('\\', [LarEloquent::config()->request_namespace, model_name(LarEloquent::config()->base_request_prefix)]);
+        $this->parent_class = implode('\\', [LarEloquent::config()->request_namespace, model_name(LarEloquent::config()->base_request_prefix), model_name(LarEloquent::config()->base_request_prefix . '_' . LarEloquent::config()->request_suffix)]);
+        $this->dir = Path::Combine(LarEloquent::config()->requests_dir, model_name(LarEloquent::config()->base_request_prefix));
         parent::__construct();
         $this->class->setAbstract(true);
     }
@@ -45,31 +45,30 @@ class Request extends FileCreator
     private function classDoc()
     {
         return (new DocBlockGenerator())
-            ->setShortDescription('Generated Request file for model '.basename($this->table_namespace))
+            ->setShortDescription('Generated Request file for model ' . basename($this->table_namespace))
             ->setLongDescription('This is an auto-generated class and should not be modified external. All changes will be overwritten in next run.')
             ->setTag((new LicenseTag(licenseName: 'MIT')));
     }
 
-    private function isLoadedMethod()
-    : MethodGenerator
+    private function isLoadedMethod(): MethodGenerator
     {
         $class = implode('\\', [LarEloquent::config()->namespace, model_name($this->table->name)]);
         $this->class->addPropertyFromGenerator((new PropertyGenerator('is_loaded', null, AbstractMemberGenerator::FLAG_PRIVATE)))
-                    ->addUse($class)
-                    ->addUse(Rule::class);
+            ->addUse($class)
+            ->addUse(Rule::class);
         return (new MethodGenerator('isLoaded'))
             ->setReturnType('bool')
             ->setDocBlock((new DocBlockGenerator())
-                              ->setShortDescription('Method to check if the model is being uploaded.')
-                              ->setTag(GeneralTag::fromContent('return', 'bool')))
+                ->setShortDescription('Method to check if the model is being uploaded.')
+                ->setTag(GeneralTag::fromContent('return', 'bool')))
             ->setBody("if (null!==\$this->is_loaded) return \$this->is_loaded;\n"
-                      ."foreach (\$this->route()->parameters as \$parameter) {\n"
-                      ."\tif (is_a(\$parameter, ".basename($class)."::class)) return \$this->is_loaded = true;\n"
-                      ."}\n"
-                      ."return \$this->is_loaded = ".
-                      ($this->primaryColumn ?
-                          "\$this->has('".$this->primaryColumn->column_name."') && !empty(\$this->get('".$this->primaryColumn->column_name."'))" :
-                          "true").';')
+                . "foreach (\$this->route()->parameters as \$parameter) {\n"
+                . "\tif (is_a(\$parameter, " . basename($class) . "::class)) return \$this->is_loaded = true;\n"
+                . "}\n"
+                . "return \$this->is_loaded = " .
+                ($this->primaryColumn ?
+                    "\$this->has('" . $this->primaryColumn->column_name . "') && !empty(\$this->get('" . $this->primaryColumn->column_name . "'))" :
+                    "true") . ';')
             ->setFlags(AbstractMemberGenerator::FLAG_PROTECTED);
 
     }
@@ -79,9 +78,9 @@ class Request extends FileCreator
         return (new MethodGenerator('rules'))
             ->setReturnType('array')
             ->setDocBlock((new DocBlockGenerator())
-                              ->setShortDescription('Get the validation rules that apply to the request.')
-                              ->setTag(GeneralTag::fromContent('return', 'array')))
-            ->setBody('return '.(new ValueGenerator($this->rules, ValueGenerator::TYPE_ARRAY_SHORT))->setIndentation('    ')->generate().';');
+                ->setShortDescription('Get the validation rules that apply to the request.')
+                ->setTag(GeneralTag::fromContent('return', 'array')))
+            ->setBody('return ' . (new ValueGenerator($this->rules, ValueGenerator::TYPE_ARRAY_SHORT))->setIndentation('    ')->generate() . ';');
     }
 
     private function parseRules()
@@ -105,6 +104,7 @@ class Request extends FileCreator
         $rules = [];
         if ($column->increments) return $rules;
         if (!$column->is_nullable) $rules['required'] = '';
+        else $rules['nullable'] = '';
         if ($column->isEmail()) {
             $rules['email'] = '';
         } elseif ($column->isURL()) $rules['url'] = '';
@@ -168,24 +168,23 @@ class Request extends FileCreator
     {
         return (new MethodGenerator('messages'))
             ->setDocBlock((new DocBlockGenerator())
-                              ->setShortDescription('Custom message for validation')
-                              ->setTag(GeneralTag::returnTag('array')))
-            ->setBody('return '.
-                      (new ValueGenerator($this->messages, ValueGenerator::TYPE_ARRAY_SHORT))->setIndentation('    ')->generate().';');
+                ->setShortDescription('Custom message for validation')
+                ->setTag(GeneralTag::returnTag('array')))
+            ->setBody('return ' .
+                (new ValueGenerator($this->messages, ValueGenerator::TYPE_ARRAY_SHORT))->setIndentation('    ')->generate() . ';');
     }
 
     private function compile()
     {
         $this->parseRules();
         $this->class->setDocBlock($this->classDoc())
-                    ->addMethodFromGenerator($this->isLoadedMethod())
-                    ->addMethodFromGenerator($this->rulesMethod());
+            ->addMethodFromGenerator($this->isLoadedMethod())
+            ->addMethodFromGenerator($this->rulesMethod());
         if (!empty($this->messages)) $this->class->addMethodFromGenerator($this->messagesMethod());
         return $this;
     }
 
-    public static function Write(DBTable $table, array $columns)
-    : void
+    public static function Write(DBTable $table, array $columns): void
     {
         (new self($table, $columns))->compile()->_write();
     }
