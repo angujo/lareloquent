@@ -132,7 +132,7 @@ class DBColumn extends DBInterface
     {
         if (is_null($this->column_default)) return null;
         return match ($this->PhpDataType()) {
-            DataType::DATETIME=> str_contains(strtoupper($this->column_default), 'CURRENT_TIMESTAMP') ? null : $this->column_default,
+            DataType::DATETIME => str_contains(strtoupper($this->column_default), 'CURRENT_TIMESTAMP') ? null : $this->column_default,
             DataType::BOOL => (bool)$this->column_default,
             DataType::INT => intval($this->column_default),
             DataType::FLOAT => floatval($this->column_default),
