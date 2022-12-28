@@ -49,11 +49,12 @@ class Resource extends FileCreator
 
     private function toArrayMethod()
     {
+        $columns=array_filter($this->columns,fn(DBColumn $column)=>!(array_key_exists($this->table->name,LarEloquent::config()->hidden_columns) && in_array($column->column_name,LarEloquent::config()->hidden_columns[$this->table->name])));
         $body   = ['$defaults = '.
                    (new ValueGenerator(array_combine(
-                                           array_map(fn(DBColumn $column) => $column->column_name, $this->columns),
+                                           array_map(fn(DBColumn $column) => $column->column_name, $columns),
                                            array_map(fn(DBColumn $column) => (new ValueGenerator("\$this->{$column->column_name}"))
-                                               ->setType(ValueGenerator::TYPE_CONSTANT), $this->columns)))).';'];
+                                               ->setType(ValueGenerator::TYPE_CONSTANT), $columns)))).';'];
         $body[] = 'return array_merge($defaults, $this->asArray($request));';
         return (new MethodGenerator('toArray'))
             ->setDocBlock((new DocBlockGenerator())
