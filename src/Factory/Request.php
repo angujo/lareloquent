@@ -93,6 +93,9 @@ class Request extends FileCreator
             foreach ($rules as $rule => $val) {
                 if (str_equal('required', $rule)) {
                     $this->rules[$column->column_name]['required'] = (new ValueGen("Rule::requiredIf(function(){ return !\$this->isLoaded(); })", ValueGen::TYPE_ASIS));
+                } elseif (str_equal('unique', $rule)) {
+                    unset($this->rules[$column->column_name]['unique']);
+                    $this->rules[$column->column_name][] = (new ValueGen("Rule::unique('{$this->table->name}','{$column->column_name}')->ignore(intval(\$this->input('{$this->primaryColumn->column_name}',0)))", ValueGen::TYPE_ASIS));
                 } else $this->rules[$column->column_name][] = empty($val) ? $rule : "$rule:$val";
             }
             // = array_map(function($k, $v){ return empty($v) ? $k : "$k:$v"; }, array_keys($rules), $rules);
@@ -122,7 +125,7 @@ class Request extends FileCreator
         elseif ($column->PhpDataType() === DataType::BOOL) $rules['boolean'] = '';
 
         if (!empty($column->character_maximum_length) && DataType::STRING === $column->PhpDataType()) $rules['max'] = "{$column->character_maximum_length}";
-        if ($column->is_unique) $rules['unique'] = "{$this->table->name},{$column->column_name}";
+        if ($column->is_unique) $rules['unique'] = '';// "{$this->table->name},{$column->column_name}";
         if (!empty($column->referenced_column_name)) $rules['exists'] = "{$column->referenced_table_name},{$column->referenced_column_name}";
         return $rules;
     }
