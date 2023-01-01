@@ -51,7 +51,7 @@ class DBEnum extends DBInterface
     {
         foreach ($entries as $entry) {
             if (!is_array($entry)) continue;
-            $this->cases = array_merge($this->cases, $entry);
+            $this->cases = array_merge($this->cases(), $entry);
         }
         return $this;
     }

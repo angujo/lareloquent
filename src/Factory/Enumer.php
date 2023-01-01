@@ -28,7 +28,9 @@ class Enumer
         foreach ($this->connection->enums() as $DBEnum) {
             if (isset($this->enums[$DBEnum->column_name])) {
                 $this->enums[$DBEnum->column_name]->merge($DBEnum->cases());
-            } else  $this->enums[$DBEnum->column_name] = $DBEnum;
+            } else {
+                $this->enums[$DBEnum->column_name] = $DBEnum;
+            }
         }
     }
 
