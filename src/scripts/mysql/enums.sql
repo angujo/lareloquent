@@ -4,4 +4,4 @@ select c.TABLE_NAME
      , IF(IS_NULLABLE = 'YES', true, false) as is_nullable
 from information_schema.`COLUMNS` c
 where c.TABLE_SCHEMA = '{db}'
-  and c.DATA_TYPE = 'enum'
+  and c.DATA_TYPE = 'enum' {andwhere}
