@@ -50,6 +50,12 @@ return
          */
         'date_format'            => 'Y-M-d HH:i:s',
         /*
+         * Select a method that is used to perform updates other than post.
+         * This will separate your request based on whether an update is being done of not.
+         * Effective on required parameters that might not be part of request during an update.
+         */
+        'update_method' => 'PUT',
+        /*
          * Primary Key Name will mostly be used with views. This will flag the column as the primary for a view.
          * Tables can have a different name and easily determined.
          * Default: id

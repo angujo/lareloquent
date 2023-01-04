@@ -25,7 +25,8 @@ class Request extends FileCreator
     private array $columns;
     private string $table_namespace;
 
-    private array $rules = [];
+    private array $general_rules = [];
+    private array $non_update_rules = [];
     private array $messages = [];
     private ?DBColumn $primaryColumn = null;
 
@@ -75,12 +76,26 @@ class Request extends FileCreator
 
     private function rulesMethod()
     {
+        $body = [];
+        if (!LarEloquent::config()->update_method || !is_string(LarEloquent::config()->update_method) || str_equal('post', LarEloquent::config()->update_method)) {
+            $this->general_rules = array_merge_recursive($this->non_update_rules, $this->general_rules);
+            $this->non_update_rules = [];
+        }
+        $body[] = (empty($this->non_update_rules) ? 'return ' : "\$rules = ") . (new ValueGenerator($this->general_rules, ValueGenerator::TYPE_ARRAY_SHORT))->setIndentation('    ')->generate() . ';';
+        if (!empty($this->non_update_rules)) {
+            $method = strtoupper(LarEloquent::config()->update_method);
+            $body[] = "if (!\$this->isMethod('{$method}')) {";
+            $body[] = "\t\$update_rules = " . (new ValueGenerator($this->non_update_rules, ValueGenerator::TYPE_ARRAY_SHORT))->setIndentation('        ')->generate() . ";";
+            $body[] = "\t\$rules = array_merge_recursive(\$update_rules, \$rules);";
+            $body[] = '}';
+        }
+        $body[] = 'return $rules;';
         return (new MethodGenerator('rules'))
             ->setReturnType('array')
             ->setDocBlock((new DocBlockGenerator())
                 ->setShortDescription('Get the validation rules that apply to the request.')
                 ->setTag(GeneralTag::fromContent('return', 'array')))
-            ->setBody('return ' . (new ValueGenerator($this->rules, ValueGenerator::TYPE_ARRAY_SHORT))->setIndentation('    ')->generate() . ';');
+            ->setBody(implode("\n", $body));
     }
 
     private function parseRules()
@@ -92,11 +107,12 @@ class Request extends FileCreator
             $this->messages = array_merge($this->messages, $this->getMessages(array_keys($rules), $column));
             foreach ($rules as $rule => $val) {
                 if (str_equal('required', $rule)) {
-                    $this->rules[$column->column_name]['required'] = (new ValueGen("Rule::requiredIf(function(){ return !\$this->isLoaded(); })", ValueGen::TYPE_ASIS));
+                    $this->non_update_rules[$column->column_name] = ['required'];//= (new ValueGen("Rule::requiredIf(function(){ return !\$this->isLoaded(); })", ValueGen::TYPE_ASIS));
                 } elseif (str_equal('unique', $rule)) {
-                    unset($this->rules[$column->column_name]['unique']);
-                    $this->rules[$column->column_name][] = (new ValueGen("Rule::unique('{$this->table->name}','{$column->column_name}')->ignore(intval(\$this->input('{$this->primaryColumn->column_name}',0)))", ValueGen::TYPE_ASIS));
-                } else $this->rules[$column->column_name][] = empty($val) ? $rule : "$rule:$val";
+                    unset($this->general_rules[$column->column_name]['unique']);
+                    $this->general_rules[$column->column_name][] = (new ValueGen("Rule::unique('{$this->table->name}','{$column->column_name}')->ignore(intval(\$this->input('{$this->primaryColumn->column_name}',0)))", ValueGen::TYPE_ASIS));
+                    $this->class->addUse(Rule::class);
+                } else $this->general_rules[$column->column_name][] = empty($val) ? $rule : "$rule:$val";
             }
             // = array_map(function($k, $v){ return empty($v) ? $k : "$k:$v"; }, array_keys($rules), $rules);
         }
@@ -181,7 +197,7 @@ class Request extends FileCreator
     {
         $this->parseRules();
         $this->class->setDocBlock($this->classDoc())
-            ->addMethodFromGenerator($this->isLoadedMethod())
+            // ->addMethodFromGenerator($this->isLoadedMethod())
             ->addMethodFromGenerator($this->rulesMethod());
         if (!empty($this->messages)) $this->class->addMethodFromGenerator($this->messagesMethod());
         return $this;

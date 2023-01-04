@@ -19,6 +19,7 @@ use function Angujo\Lareloquent\str_equal;
  * @property bool        $define_connection
  * @property bool        $add_table_schema
  * @property string      $date_format
+ * @property string      $update_method
  * @property bool        $observers
  * @property string      $observers_dir
  * @property string      $observer_namespace
