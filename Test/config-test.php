@@ -59,6 +59,13 @@ return
          */
         'update_method' => 'patch',
         /*
+         * Enter the prefixes of corresponding columns in a table that indicate the start and end of a period.
+         * E.g. start_date and end_date or start_datetime and end_datetime if such format is used the design.
+         * Other extensions can be used as long as the prefixes are respected.
+         * E.g. start_event_date can be used as well.
+         */
+        'period_date_prefixes'=>['start_','end_'],
+        /*
          * Allow defining scopes for various models.
          * This will add abstract scope methods to be implemented as well as set method doc for easy coding.
          * E.g. ['users'=>['active','expired'],'products'=>'sold',...]
@@ -193,7 +200,7 @@ return
          *Tables to be run ONLY
          * The reset will be excluded
          */
-        'only_tables' => [],
+        'only_tables' => ['calendar_events'],
         /*
          * Process pivot tables to be part of the model classes.
          * If processed pivot columns accessible through [pivot] as the attribute name,

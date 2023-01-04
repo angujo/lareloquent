@@ -120,7 +120,7 @@ class DBColumn extends DBInterface
 
     public function isDateTime()
     {
-        return in_array($this->data_type, ['date_time', 'timestamp', 'datetime']);
+        return in_array($this->data_type, ['date_time', 'timestamp', 'datetime','date']);
     }
 
     public function docType()

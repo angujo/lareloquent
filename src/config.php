@@ -56,6 +56,13 @@ return
          */
         'update_method' => 'PUT',
         /*
+         * Enter the prefixes of corresponding columns in a table that indicate the start and end of a period.
+         * E.g. start_date and end_date or start_datetime and end_datetime if such format is used the design.
+         * Other extensions can be used as long as the prefixes are respected.
+         * E.g. start_event_date can be used as well.
+         */
+        'period_date_prefixes'=>['start_','end_'],
+        /*
          * Primary Key Name will mostly be used with views. This will flag the column as the primary for a view.
          * Tables can have a different name and easily determined.
          * Default: id

@@ -15,6 +15,7 @@ use Laminas\Code\Generator\DocBlockGenerator;
 use Laminas\Code\Generator\MethodGenerator;
 use Laminas\Code\Generator\PropertyGenerator;
 use Laminas\Code\Generator\ValueGenerator;
+use function Angujo\Lareloquent\array_search_fn;
 use function Angujo\Lareloquent\model_name;
 use function Angujo\Lareloquent\str_equal;
 
@@ -114,8 +115,18 @@ class Request extends FileCreator
                     $this->class->addUse(Rule::class);
                 } else $this->general_rules[$column->column_name][] = empty($val) ? $rule : "$rule:$val";
             }
-            // = array_map(function($k, $v){ return empty($v) ? $k : "$k:$v"; }, array_keys($rules), $rules);
+            if (($prule = $this->checkPeriodDate($column)))  $this->general_rules[$column->column_name][] = $prule;
         }
+    }
+
+    private function checkPeriodDate(DBColumn $column)
+    {
+        if (!$column->isDateTime()) return null;
+        if (false === ($key = array_search_fn(LarEloquent::config()->period_date_prefixes, fn($v) => str_starts_with($column->column_name, $v)))) return null;
+
+        $prefix = LarEloquent::config()->period_date_prefixes[$key];
+        $other_col = LarEloquent::config()->period_date_prefixes[0 === $key ? 1 : 0] . preg_replace("/^{$prefix}/", '', $column->column_name);
+        return ($skey = array_search_fn($this->columns, fn(DBColumn $scol) => str_equal($other_col, $scol->column_name))) ? (($key ? 'after_or_equal' : 'before_or_equal') . ':' . $this->columns[$skey]->column_name) : null;
     }
 
     private function getRule(DBColumn $column)
@@ -127,6 +138,7 @@ class Request extends FileCreator
         if ($column->isEmail()) {
             $rules['email'] = '';
         } elseif ($column->isURL()) $rules['url'] = '';
+        elseif ($column->isDateTime()) $rules['date'] = '';
         elseif ($column->isUUID()) $rules['uuid'] = '';
         elseif ($column->isIpAddress()) $rules['ip'] = '';
         elseif ($column->isJson()) $rules['json'] = '';
