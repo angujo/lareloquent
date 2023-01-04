@@ -144,10 +144,18 @@ namespace Angujo\Lareloquent {
     }
 
     if (!function_exists('array_search_fn')) {
-        function array_search_fn(array $array, string|\Closure $str_fn, bool $strict = false): string|int|bool
+        /**
+         * Search through an array using provided function and return the results key
+         * @param array $array Haystack to search from
+         * @param string|\Closure $str_fn Predicate function or needle for full text match string
+         * @param bool $strict_nest If function provided and is TRUE will search through children as well.
+         * @return string|int|bool The key of where item found or FALSE if not found.
+         */
+        function array_search_fn(array $array, string|\Closure $str_fn, bool $strict_nest = false): string|int|bool
         {
-            if (is_string($str_fn)) return array_search($str_fn, $array, $strict);
+            if (is_string($str_fn)) return array_search($str_fn, $array, $strict_nest);
             foreach ($array as $key => $item) {
+                if ($strict_nest && is_array($item) && false !== array_search_fn($item, $str_fn, $strict_nest)) return $key;
                 if (false !== $str_fn($item)) return $key;
             }
             return false;

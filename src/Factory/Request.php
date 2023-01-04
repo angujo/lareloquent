@@ -160,9 +160,9 @@ class Request extends FileCreator
 
     public function getMessages($rules, DBColumn $column)
     {
-        $msgs = [];
+        $messages = [];
         foreach ($rules as $rule) {
-            if (array_key_exists($rule, $msgs) || !array_key_exists($rule, BaseRequest::$default_messages)) continue;
+            if (array_key_exists($rule, $messages) || !array_key_exists($rule, BaseRequest::$default_messages)) continue;
             $msg = null;
             switch ($rule) {
                 case 'max':
@@ -190,9 +190,9 @@ class Request extends FileCreator
             if (!empty($msg)) {
                 $rule = "$column->column_name.$rule";
             } else   $msg = BaseRequest::$default_messages[$rule];
-            $msgs[$rule] = $msg;
+            $messages[$rule] = $msg;
         }
-        return $msgs;
+        return $messages;
     }
 
     private function messagesMethod()
