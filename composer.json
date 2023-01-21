@@ -25,7 +25,7 @@
     "nesbot/carbon": "^2.61.0",
     "plejus/pluralize": "dev-master",
     "laminas/laminas-code": "4.7.x-dev",
-    "staudenmeir/laravel-adjacency-list": "dev-master"
+    "staudenmeir/laravel-adjacency-list": "^1.0"
   },
   "extra": {
     "laravel": {
