@@ -141,8 +141,8 @@ class Request extends FileCreator
         elseif ($column->isDateTime()) $rules['date'] = '';
         elseif ($column->isUUID()) $rules['uuid'] = '';
         elseif ($column->isIpAddress()) $rules['ip'] = '';
-        elseif ($column->isJson()) $rules['json'] = '';
         elseif ($column->isArray()) $rules['array'] = '';
+        elseif ($column->isJson()) $rules['json'] = '';
         elseif ($column->isImage()) $rules['image'] = '';
         elseif ($column->isFile()) $rules['file'] = '';
         elseif ($column->isMacAddress()) $rules['mac_address'] = '';

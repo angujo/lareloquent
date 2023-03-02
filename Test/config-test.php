@@ -200,7 +200,7 @@ return
          *Tables to be run ONLY
          * The reset will be excluded
          */
-        'only_tables' => ['calendar_events'],
+        'only_tables' => [],
         /*
          * Process pivot tables to be part of the model classes.
          * If processed pivot columns accessible through [pivot] as the attribute name,
@@ -271,8 +271,8 @@ return
          * The items should be set in order of priorities to avoid conflicts
          */
         'identified_columns' => [
-            'json' => [['name' => '%_json', 'type' => 'string'], ['type' => 'json']],
             'array' => [['name' => '%_array', 'type' => 'string'], ['name' => '%_array', 'type' => 'json'], ['type' => 'set']],
+            'json' => [['name' => '%_json', 'type' => 'string'], ['type' => 'json']],
             'image' => [['name' => '%_image', 'type' => 'string'], ['name' => '%_picture', 'type' => 'string']],
             'file' => [['name' => '%_file', 'type' => 'string'],],
             'ip' => [['name' => '%_ip', 'type' => 'string'], ['name' => 'ip_address', 'type' => 'string'],],
