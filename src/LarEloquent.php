@@ -48,6 +48,7 @@ class LarEloquent
         Enumer::Write($this->connection);
         foreach ($this->connection->Tables() as $table) {
             if ($pre && is_callable($pre)) $pre($table);
+            ProviderBoot::addMorph($table->name);
             /** @var TraitModel|Model $model */
             $model = self::config()->model_trait && in_array($table->name, self::config()->trait_model_tables) ? TraitModel::Write($this->connection, $table) : Model::Write($this->connection, $table);
             WorkModel::Write($table);

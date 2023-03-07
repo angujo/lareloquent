@@ -48,7 +48,6 @@ trait HasReferential
     : static
     {
         foreach (Morpher::morphers($this->connection, $this->table->name) as $polymorphic) {
-            ProviderBoot::addMorph($polymorphic->referencedTables());
             foreach ($polymorphic->getReturnableClasses() as $returnableClass) {
                 $this->class->addUse($returnableClass);
             }
