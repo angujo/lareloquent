@@ -200,7 +200,7 @@ return
          *Tables to be run ONLY
          * The reset will be excluded
          */
-        'only_tables' => [],
+        'only_tables' => ['report_templates','report_sections'],
         /*
          * Process pivot tables to be part of the model classes.
          * If processed pivot columns accessible through [pivot] as the attribute name,

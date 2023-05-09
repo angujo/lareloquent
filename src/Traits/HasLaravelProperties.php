@@ -39,7 +39,7 @@ trait HasLaravelProperties
             if ($column->isEnum()) {
                 $this->class->addUse($column->getEnum()?->className());
             }
-            $this->class->getDocBlock()->setTag($column->docPropertyTag());
+            $this->class->getDocBlock()->setTag($column->docPropertyTag())->setWordWrap(false);
             if (!isset($this->primaryCol) && ($column->is_primary || ($this->table->is_view && str_equal(LarEloquent::config()->primary_key_name, $column->column_name)))) $this->primaryCol = $column;
             if (LarEloquent::config()->constant_column_names && !is_a($this, TraitModel::class) && !$this->class->hasConstant($column->constantName())) {
                 $this->class->addConstantFromGenerator($column->constantProperty());

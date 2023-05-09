@@ -53,7 +53,7 @@ trait HasReferential
             }
             $this->class->addMethodFromGenerator($this->morphToMethod($polymorphic))
                         ->addUse($polymorphic->getMorphToClass())
-                        ->getDocBlock()->setTag($polymorphic->getToDocProperty());
+                        ->getDocBlock()->setTag($polymorphic->getToDocProperty())->setWordWrap(false);
         }
         return $this;
     }
