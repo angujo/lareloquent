@@ -10,6 +10,7 @@ enum TSType: string
     case STRING = 'string';
     case NUMBER = 'number';
     case ARRAY = 'array';
+    case JSON = 'json';
     case BOOLEAN = 'boolean';
     case TUPLE = 'tuple';
     case ENUM = 'enum';

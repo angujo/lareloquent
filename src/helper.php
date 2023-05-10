@@ -101,9 +101,9 @@ namespace Angujo\Lareloquent {
     }
 
     if (!function_exists('model_file')) {
-        function model_file(string $txt, string|null $ext = 'php'): string
+        function model_file(string $txt, string|null $ext = 'php', $as_is = false): string
         {
-            return model_name($txt) . '.' . ($ext && is_string($ext) ? $ext : 'php');
+            return ($as_is ? $txt : model_name($txt)) . '.' . ($ext && is_string($ext) ? $ext : 'php');
         }
     }
 
@@ -140,6 +140,14 @@ namespace Angujo\Lareloquent {
         function str_equal(string $str1, string $str2): bool
         {
             return 0 === strcasecmp($str1, $str2);
+        }
+    }
+
+    if (!function_exists('clean_placeholders')) {
+        function clean_placeholders(string $text, string $regex = '(.*?)'): string
+        {
+            $text = preg_replace('/([^\\\\])\{(\s+)?' . $regex . '(\s+)?([^\\\\])}/', '$1', $text);
+            return preg_replace('/(\\\)(\{)(\s+)?(' . $regex . ')(\s+)?(\\\)(\})/', '$2$3$4}', $text);
         }
     }
 

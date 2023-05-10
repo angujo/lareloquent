@@ -24,31 +24,29 @@ class DBReferential extends DBInterface
     public string|null $through_table_name;
     public string|null $through_column_name;
     public string|null $through_ref_column_name;
-    public string      $table_name;
-    public string      $column_name;
-    public string      $referenced_table_name;
-    public string      $referenced_column_name;
-    public bool        $is_ignored = false;
+    public string $table_name;
+    public string $column_name;
+    public string $referenced_table_name;
+    public string $referenced_column_name;
+    public bool $is_ignored = false;
     /** @ignore */
     // public string $other_columns = '';
 
     private Referential $ref;
-    private ?string     $func_name  = null;
-    private ?Closure    $name_check = null;
+    private ?string $func_name = null;
+    private ?Closure $name_check = null;
 
     public function __construct(Referential $referential)
     {
         $this->ref = $referential;
     }
 
-    public function functionName()
-    : string
+    public function functionName(): string
     {
         return $this->func_name ?? ($this->func_name = method_name($this->accessName()));
     }
 
-    public function setFunctionName(string $name)
-    : static
+    public function setFunctionName(string $name): static
     {
         $this->func_name = method_name(
             match ($this->ref) {
@@ -58,8 +56,7 @@ class DBReferential extends DBInterface
         return $this;
     }
 
-    private function accessName()
-    : string
+    private function accessName(): string
     {
         switch ($this->ref) {
             case Referential::ONE_THROUGH:
@@ -78,14 +75,12 @@ class DBReferential extends DBInterface
         return in_plural($this->referenced_table_name);
     }
 
-    private function fromColumnName($ref = false)
-    : string
+    private function fromColumnName($ref = false): string
     {
         return col_name_reference($ref ? $this->referenced_column_name : $this->column_name);
     }
 
-    public function getReturnClass()
-    : ?string
+    public function getReturnClass(): ?string
     {
         return match ($this->ref) {
             Referential::ONE2ONE => HasOne::class,
@@ -97,10 +92,9 @@ class DBReferential extends DBInterface
         };
     }
 
-    public function getDataTypeClass()
-    : array|string
+    public function getDataTypeClass(): array|string
     {
-        return $this->isCollection() ? [model_name(in_plural($this->referenced_table_name)).'[]', 'Collection'] : model_name(in_singular($this->referenced_table_name));
+        return $this->isCollection() ? [model_name(in_plural($this->referenced_table_name)) . '[]', 'Collection'] : model_name(in_singular($this->referenced_table_name));
     }
 
     public function isCollection()
@@ -108,8 +102,7 @@ class DBReferential extends DBInterface
         return in_array($this->ref, [Referential::ONE2MANY, Referential::BELONGS_TO_MANY, Referential::MANY_THROUGH]);
     }
 
-    public function getTagDocProperty()
-    : PropertyTag
+    public function getTagDocProperty(): PropertyTag
     {
         return (new PropertyTag($this->functionName()))
             ->setTypes($this->getDataTypeClass());
@@ -118,27 +111,24 @@ class DBReferential extends DBInterface
     /**
      * @return Referential
      */
-    public function getRef()
-    : Referential
+    public function getRef(): Referential
     {
         return $this->ref;
     }
 
-    public function tsReference()
+    public function tsReference($asInterface = false): string
     {
-        return model_name($this->referenced_table_name);
+        return ($asInterface ? 'I' : '') . model_name($this->referenced_table_name);
     }
 
-    public function tsPropertyName()
-    : string
+    public function tsPropertyName(): string
     {
-        return snake_case($this->functionName()).'?';
+        return snake_case($this->functionName()) . '?';
     }
 
-    public function tsTypeValue()
-    : string
+    public function tsTypeValue($asInterface = false): string
     {
-        return $this->isCollection() ? implode('', ['Array<', $this->tsReference(), '>']) : $this->tsReference();
+        return $this->isCollection() ? implode('', ['Array<', $this->tsReference($asInterface), '>']) : $this->tsReference($asInterface);
     }
 
 }

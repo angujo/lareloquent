@@ -63,6 +63,7 @@ use function Angujo\Lareloquent\str_equal;
  * @property string[] $guarded_columns
  * @property string[] $identified_columns
  * @property bool $typescript
+ * @property bool $typescript_interface
  * @property string $typescript_dir
  */
 class Config

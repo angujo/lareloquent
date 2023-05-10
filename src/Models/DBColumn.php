@@ -120,7 +120,7 @@ class DBColumn extends DBInterface
 
     public function isDateTime()
     {
-        return in_array($this->data_type, ['date_time', 'timestamp', 'datetime','date']);
+        return in_array($this->data_type, ['date_time', 'timestamp', 'datetime', 'date']);
     }
 
     public function docType()
@@ -191,7 +191,8 @@ class DBColumn extends DBInterface
         return match ($this->data_type) {
             SQLType::TINYINT->value, SQLType::BOOL->value, SQLType::BOOLEAN->value => TSType::BOOLEAN,
             SQLType::INT->value, SQLType::MEDIUMINT->value, SQLType::BIGINT->value, SQLType::SMALLINT->value, SQLType::YEAR->value, SQLType::FLOAT->value, SQLType::DOUBLE->value, SQLType::DECIMAL->value => TSType::NUMBER,
-            SQLType::JSON->value, SQLType::SET->value => TSType::ARRAY,
+            SQLType::JSON->value => TSType::JSON,
+            SQLType::SET->value => TSType::ARRAY,
             SQLType::TEXT->value, SQLType::MEDIUMTEXT->value, SQLType::CHAR->value, SQLType::VARCHAR->value, SQLType::LONGTEXT->value => TSType::STRING,
             SQLType::ENUM->value => TSType::ENUM,
             SQLType::DATETIME->value, SQLType::TIMESTAMP->value, SQLType::DATE->value => TSType::DATE,
@@ -202,6 +203,7 @@ class DBColumn extends DBInterface
     public function tsTypeValue(): string
     {
         return match ($this->tsDataType()) {
+            TSType::JSON => 'any[]|\{[k:string]:any\}',
             TSType::TUPLE, TSType::ARRAY => 'Array<any>',
             TSType::ENUM => $this->getEnum()->getName(),
             default => $this->tsDataType()->value,
@@ -221,6 +223,7 @@ class DBColumn extends DBInterface
         return match ($this->tsDataType()) {
             TSType::STRING => "''",
             TSType::NUMBER => '0',
+            TSType::JSON => '{}',
             TSType::TUPLE, TSType::ARRAY => '[]',
             TSType::BOOLEAN => 'false',
             TSType::ENUM => var_export($this->getEnum()->case(), true),

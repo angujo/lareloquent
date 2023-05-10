@@ -1,4 +1,4 @@
-export class {name} {
+export {type} {name} {
     {properties}
     {methods}
     {recursives}

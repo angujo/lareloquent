@@ -293,5 +293,6 @@ return
          *      end_date Column comment "validation:{gte:start_date}"
          */
         'typescript' => true,
+        'typescript_interface' => true,
         'typescript_dir' => Path::Combine(ROOT_DIR, 'Test', 'output', 'Typescripts'),
     ];
